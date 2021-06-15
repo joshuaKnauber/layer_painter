@@ -74,6 +74,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         
         self.layer_type = layer_type
 
+        self.__add_preview_output()
         self.__add_layer_opacity()
         self.setup_channels()
         
@@ -131,6 +132,32 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             return None #TODO?
         
         
+    def get_channel_input_index(self, uid):
+        """ returns the index of the channel input with the given uid """
+        for i, out in enumerate(self.layer_ntree.nodes[ constants.INPUT_NAME ].outputs):
+            if hasattr(out, "uid") and out.uid == uid:
+                return i
+        return -1
+        
+        
+    def get_channel_output_index(self, uid):
+        """ returns the index of the channel output with the given uid """
+        for i, inp in enumerate(self.layer_ntree.nodes[ constants.OUTPUT_NAME ].inputs):
+            if hasattr(inp, "uid") and inp.uid == uid:
+                return i
+        return -1
+    
+    
+    def get_channel_endpoint_indices(self, uid):
+        """ returns the indices for the channel in and output for the given uid """
+        return self.get_channel_input_index(uid), self.get_channel_output_index(uid)
+        
+        
+    def __add_preview_output(self):
+        """ adds an output to the layer node group which can be used for previews inside the layer """
+        group_utils.add_output(self.node, "NodeSocketColor", "PREVIEW")
+        
+        
     def __add_layer_opacity(self):
         """ adds the node handling this layers opacity """
         opacity = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
@@ -148,7 +175,11 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ adds the in and output for the given channel in this layer """
         inp, group_inp = group_utils.add_input(self.node, channel.inp.bl_rna.identifier, channel.name)
         inp.default_value = channel.inp.default_value
+
         _, group_out = group_utils.add_output(self.node, channel.inp.bl_rna.identifier, channel.name)
+
+        group_inp.uid = channel.uid
+        group_out.uid = channel.uid
         return group_inp, group_out
         
         
@@ -250,7 +281,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             self.mat.node_tree.links.new( out, channel.inp )
             
         else:
-            index = above.get_channel_endpoint_index( channel.uid )
+            index = above.get_channel_input_index( channel.uid )
             if index >= 0:
                 self.mat.node_tree.links.new( out, above.node.inputs[index] )
         
@@ -260,7 +291,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         below = self.mat.lp.layer_below(self)
         
         if below:
-            index = below.get_channel_endpoint_index( channel.uid )
+            index = below.get_channel_output_index( channel.uid )
             if index >= 0:
                 self.mat.node_tree.links.new( below.node.outputs[index], inp )
         
@@ -278,7 +309,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def disconnect_outputs(self):
         """ disconnects all the layers channel outputs """
         for channel in self.mat.lp.channels:
-            index = self.get_channel_endpoint_index( channel.uid )
+            index = self.get_channel_output_index( channel.uid )
             for link in self.node.outputs[ index ].links:
                 self.mat.node_tree.links.remove( link )
                 
@@ -286,11 +317,11 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def connect_channel_outputs(self):
         """ connects all channel outputs to the layer above """
         for channel in self.mat.lp.channels:
-            index = self.get_channel_endpoint_index( channel.uid )
+            index = self.get_channel_output_index( channel.uid )
             self.__connect_layer_output( channel, self.node.outputs[index] )
             
             
-    def __remove_channel(self, mix, socket_index):
+    def __remove_channel(self, mix, uid):
         """ removes the nodes for the given channel mix node and socket """
         # remove channel value nodes
         node_utils.remove_connected_left(self.layer_ntree, mix.inputs[2].links[0].from_node)
@@ -301,33 +332,28 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         self.layer_ntree.nodes.remove(tex_alpha)
         
         # remove channel endpoints
-        self.layer_ntree.inputs.remove(self.layer_ntree.inputs[ socket_index ])
-        self.layer_ntree.outputs.remove(self.layer_ntree.outputs[ socket_index ])
+        self.layer_ntree.inputs.remove(self.layer_ntree.inputs[ self.get_channel_input_index(uid) ])
+        self.layer_ntree.outputs.remove(self.layer_ntree.outputs[ self.get_channel_output_index(uid) ])
         
         self.layer_ntree.nodes.remove(mix)
         
         
     def __remove_orphan_channels(self, channel_uids):
         """ removes all channels that aren't in the given list of uids """
-        for i in range( len(self.layer_ntree.inputs)-1, -1, -1 ):
-            mix = self.layer_ntree.nodes[ constants.INPUT_NAME ].outputs[i].links[0].to_node
-            if not mix.name in channel_uids:
-                self.__remove_channel(mix, i)
+        for i in range( len(self.layer_ntree.inputs)-1, -1, -1 ):                
+            out = self.layer_ntree.nodes[ constants.INPUT_NAME ].outputs[i]
+            if hasattr(out, "uid") and out.uid:
                 
-                
-    def get_channel_endpoint_index(self, uid):
-        """ returns the channel endpoint indices for the given channel uid """
-        for i in range( len(self.layer_ntree.inputs) ):
-            if self.layer_ntree.nodes[ constants.INPUT_NAME ].outputs[i].links[0].to_node.name == uid:
-                return i
-        return -1
+                mix = out.links[0].to_node
+                if not mix.name in channel_uids:
+                    self.__remove_channel(mix, mix.name)
 
                 
     def __update_channel_socket_names(self, changed_channel):
         """ finds the channel endpoints for the given channel and updates their name """
-        index = self.get_channel_endpoint_index( changed_channel.uid )
-        self.layer_ntree.inputs[ index ].name = changed_channel.name
-        self.layer_ntree.outputs[ index ].name = changed_channel.name
+        inp_index, out_index = self.get_channel_endpoint_indices( changed_channel.uid )
+        self.layer_ntree.inputs[ inp_index ].name = changed_channel.name
+        self.layer_ntree.outputs[ out_index ].name = changed_channel.name
                 
         
     def setup_channels(self, changed_channel=None):
