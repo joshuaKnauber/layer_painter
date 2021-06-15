@@ -88,9 +88,14 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         return self.node.node_tree.nodes[ uid ]
     
     
+    def get_channel_tex_alpha_socket(self, uid):
+        """ returns the texture alpha nodes socket for the given channel uid """
+        return self.get_channel_node(uid).inputs[0].links[0].from_node.inputs[0]
+    
+    
     def get_channel_opacity_socket(self, uid):
         """ returns the opacity nodes socket for the given channel uid """
-        return self.get_channel_node(uid).inputs[0].links[0].from_node.inputs[0]
+        return self.get_channel_tex_alpha_socket(uid).node.inputs[2].links[0].from_node.inputs[0]
     
     
     def get_channel_value_node(self, uid):
@@ -123,6 +128,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         opacity = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
         
         opacity.name = constants.OPAC_NAME
+        opacity.label = constants.OPAC_NAME
         opacity.location = (-350, -100)
         
         opacity.inputs[0].default_value = 1
@@ -144,6 +150,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
         mix = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
         mix.name = channel.uid
+        mix.label = channel.uid
         mix.mute = not channel.default_enable
         
         self.layer_ntree.links.new( group_inp, mix.inputs[1] )
@@ -155,12 +162,21 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def __add_channel_opacity(self, mix):
         """ adds the node controlling the opacity for the given channel node """
         opacity = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
+        opacity.label = "Channel Opacity"
         
         opacity.inputs[0].default_value = 1
         opacity.inputs[1].default_value = (0,0,0,1)
         opacity.inputs[2].default_value = (1,1,1,1)
+
+        tex_alpha = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
+        tex_alpha.label = "Texture Alpha"
         
-        self.layer_ntree.links.new( opacity.outputs[0], mix.inputs[0] )
+        tex_alpha.inputs[0].default_value = 1
+        tex_alpha.inputs[1].default_value = (0,0,0,1)
+        tex_alpha.inputs[2].default_value = (1,1,1,1)
+        
+        self.layer_ntree.links.new( opacity.outputs[0], tex_alpha.inputs[2] )
+        self.layer_ntree.links.new( tex_alpha.outputs[0], mix.inputs[0] )
         self.layer_ntree.links.new( self.layer_ntree.nodes[ constants.OPAC_NAME ].outputs[0], opacity.inputs[2] )
 
         return opacity
@@ -271,8 +287,10 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         # remove channel value nodes
         node_utils.remove_connected_left(self.layer_ntree, mix.inputs[2].links[0].from_node)
 
-        # remove channel opacity node. TODO: when has masks or paint layer looks different
-        self.layer_ntree.nodes.remove(mix.inputs[0].links[0].from_node)
+        # remove channel opacity nodes
+        tex_alpha = mix.inputs[0].links[0].from_node
+        self.layer_ntree.nodes.remove(tex_alpha.inputs[2].links[0].from_node)
+        self.layer_ntree.nodes.remove(tex_alpha)
         
         # remove channel endpoints
         self.layer_ntree.inputs.remove(self.layer_ntree.inputs[ socket_index ])
@@ -389,6 +407,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         if data_type == "COL":
             tex = self.__texture_setup()
             self.layer_ntree.links.new( tex.outputs[0], connect_socket )
+            self.layer_ntree.links.new( tex.outputs[1], self.get_channel_tex_alpha_socket(channel_uid) )
         
         elif data_type == "TEX":
             value_node = self.setup_fill_value_node( self.mat.lp.channel_by_uid(channel_uid) )
