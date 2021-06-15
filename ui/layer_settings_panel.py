@@ -46,7 +46,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             if context.scene.lp.layer_nav == "LAYER":
                 for channel in mat.lp.channels:
                     channel_mix = layer.get_channel_node( channel.uid )
-                    self.draw_channel(layout, layer, channel, channel_mix)
+                    self.draw_channel(layout, mat, layer, channel, channel_mix)
 
             # MASK SETTINGS
             elif context.scene.lp.layer_nav == "MASKS":
@@ -57,7 +57,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 layout.label(text="Placeholder")
 
 
-    def draw_channel(self, layout, layer, channel, channel_mix):
+    def draw_channel(self, layout, mat, layer, channel, channel_mix):
         box = layout.box()
         row = box.row(align=True)
         
@@ -72,5 +72,18 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             row.prop(channel_mix, "blend_type", text="", emboss=False)
             row.prop(layer.get_channel_opacity_socket( channel.uid ), "default_value", text="", slider=True)
 
-            row = box.row()
-            row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
+            row = box.row(align=True)
+            
+            data_type = mat.lp.get_channel_data_type(layer, channel.uid)
+
+            data_icon = "SHADING_RENDERED" if data_type == "COL" else "SHADING_TEXTURE"
+            op = row.operator("lp.cycle_channel_data", text="", icon=data_icon)
+            op.material = mat.name
+            op.layer_uid = layer.uid
+            op.channel_uid = channel.uid
+            
+            if data_type == "COL":
+                row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
+
+            elif data_type == "TEX":
+                row.template_ID(layer.get_channel_value_node( channel.uid ), "image", new="image.new", open="image.open")

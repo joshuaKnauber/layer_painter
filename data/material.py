@@ -70,6 +70,14 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
             if self.layers[i].uid == uid:
                 return i
         return -1
+            
+            
+    def layer_by_uid(self, uid):
+        """ returns the layer with the given uid """
+        for layer in self.layers:
+            if layer.uid == uid:
+                return layer
+        return None
     
     
     def layer_above(self, layer, amount=1):
@@ -149,6 +157,18 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
             self.selected -= 1
 
             self.active.move_down()
+            
+    
+    def get_channel_data_type(self, layer, channel_uid):
+        """ returns the type of data that this channel is set to for the given layer
+        return in ("COL", "TEX")
+        """
+        return layer.get_channel_data_type( channel_uid )
+    
+    
+    def cycle_channel_data_type(self, layer, channel_uid):
+        """ cycles the data that this channel is set to for the given layer """
+        layer.cycle_channel_data_type( channel_uid )
         
     
     ### Methods to manipulate the channels of this material

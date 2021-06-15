@@ -4,6 +4,8 @@ MODULE = "layer_painter"
 # id names of different nodes for cleaner notation
 NODES = {
     "TEX":      "ShaderNodeTexImage",
+    "MAPPING":  "ShaderNodeMapping",
+    "COORDS":   "ShaderNodeTexCoord",
     "PRINC":    "ShaderNodeBsdfPrincipled",
     "MIX":      "ShaderNodeMixRGB",
     "RGB":      "ShaderNodeRGB",

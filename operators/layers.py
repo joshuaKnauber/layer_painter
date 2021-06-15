@@ -111,3 +111,32 @@ class LP_OT_MoveLayerDown(bpy.types.Operator):
         bpy.data.materials[self.material].lp.move_active_layer_down()
         utils.redraw()
         return {"FINISHED"}
+
+
+class LP_OT_CycleChannelData(bpy.types.Operator):
+    bl_idname = "lp.cycle_channel_data"
+    bl_label = "Cycle Channel Data"
+    bl_description = "Cycles this channels data type to the next"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+    
+    material: bpy.props.StringProperty(name="Material",
+                                    description="Name of the material to use",
+                                    options={"HIDDEN", "SKIP_SAVE"})
+    
+    layer_uid: bpy.props.StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+
+    channel_uid: bpy.props.StringProperty(options={"HIDDEN", "SKIP_SAVE"})
+
+    @classmethod
+    def poll(cls, context):
+        return operator_utils.base_poll(context)
+
+    def execute(self, context):
+        mat = bpy.data.materials[self.material]
+        layer = mat.lp.layer_by_uid( self.layer_uid )
+
+        if layer:
+            mat.lp.cycle_channel_data_type( layer, self.channel_uid )
+
+        utils.redraw()
+        return {"FINISHED"}

@@ -1,11 +1,9 @@
 import bpy
-from . import material, layer, fill_layer, paint_layer, channel
+from . import material, layer, channel
 
 
 classes = (
     channel.LP_ChannelProperties,
-    fill_layer.LP_FillLayerProperties,
-    paint_layer.LP_PaintLayerProperties,
     layer.LP_LayerProperties,
     material.LP_MaterialProperties,
 )

@@ -8,6 +8,7 @@ classes = (
     layers.LP_OT_RemoveLayer,
     layers.LP_OT_MoveLayerUp,
     layers.LP_OT_MoveLayerDown,
+    layers.LP_OT_CycleChannelData,
     channels.LP_OT_MakeChannel,
     channels.LP_OT_RemoveChannel,
     channels.LP_OT_MoveChannelUp,

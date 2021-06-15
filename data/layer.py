@@ -3,8 +3,6 @@ from ..utils import make_uid
 from . import group_utils
 from . import node_utils
 from .. import constants
-from .fill_layer import LP_FillLayerProperties
-from .paint_layer import LP_PaintLayerProperties
 
 
 cached_materials = {}
@@ -65,12 +63,6 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                                         description="The type of this layer",
                                         items=[("FILL","Fill","Fill Layer"),
                                             ("PAINT","Paint","Paint Layer")])
-
-
-    fill: bpy.props.PointerProperty(type=LP_FillLayerProperties)
-
-    
-    paint: bpy.props.PointerProperty(type=LP_PaintLayerProperties)
         
         
     def init(self, ngroup, layer_type, mat_uid):
@@ -101,12 +93,21 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         return self.get_channel_node(uid).inputs[0].links[0].from_node.inputs[0]
     
     
-    def get_channel_value_socket(self, uid):
-        """ returns the socket storing the value for the given channel uid """
+    def get_channel_value_node(self, uid):
+        """ returns the node storing the value for the given channel uid """
         if self.layer_type == "FILL":
             channel_mix = self.get_channel_node( uid )
-            value_node = channel_mix.inputs[2].links[0].from_node
+            return channel_mix.inputs[2].links[0].from_node
             
+        elif self.layer_type == "PAINT":
+            return None #TODO?
+    
+    
+    def get_channel_value_socket(self, uid):
+        """ returns the socket storing the value for the given channel uid """
+        value_node = self.get_channel_value_node( uid )
+        
+        if self.layer_type == "FILL":
             if value_node.bl_idname == constants.NODES["RGB"]:
                 return value_node.outputs[0]
             
@@ -163,6 +164,21 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         self.layer_ntree.links.new( self.layer_ntree.nodes[ constants.OPAC_NAME ].outputs[0], opacity.inputs[2] )
 
         return opacity
+    
+    
+    def setup_fill_value_node(self, channel):
+        """ setup the value node for the fill layer """
+        if type(channel.inp.default_value) == float:
+            value = self.layer_ntree.nodes.new( constants.NODES["MIX"] )
+            value.inputs[0].default_value = channel.inp.default_value
+            value.inputs[1].default_value = (0,0,0,1)
+            value.inputs[2].default_value = (1,1,1,1)
+
+        else:
+            value = self.layer_ntree.nodes.new( constants.NODES["RGB"] )
+            value.outputs[0].default_value = channel.inp.default_value
+
+        return value
         
         
     def __create_fill_channel(self, channel):
@@ -170,9 +186,16 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         mix = self.__add_channel_mix(channel)
         self.__add_channel_opacity(mix)
 
-        self.fill.setup_value_node(self.layer_ntree, channel, mix)
+        value_node = self.setup_fill_value_node(channel)
+        self.layer_ntree.links.new( value_node.outputs[0], mix.inputs[2] )
         
         return self.node.inputs[-1], self.node.outputs[-1]
+    
+    
+    def setup_paint_value_node(self): # TODO
+        """ setup the value node for the paint layer """
+        tex = self.layer_ntree.nodes.new( constants.NODES["TEX"] )
+        return tex
         
         
     def __create_paint_channel(self, channel):
@@ -180,7 +203,8 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         mix = self.__add_channel_mix(channel)
         opacity = self.__add_channel_opacity(mix)
 
-        self.paint.setup_value_node(self.layer_ntree, channel, mix) # TODO
+        tex = self.setup_paint_value_node() # TODO
+        self.layer_ntree.links.new( tex.outputs[0], mix.inputs[2] )
         
         return self.node.inputs[-1], self.node.outputs[-1]
     
@@ -328,3 +352,44 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         
         if bottom:
             bottom.connect_channel_outputs()
+            
+            
+    def __texture_setup(self):
+        """ sets up texture nodes and returns the texture node """
+        tex = self.layer_ntree.nodes.new( constants.NODES["TEX"] )
+        mapp = self.layer_ntree.nodes.new( constants.NODES["MAPPING"] )
+        coord = self.layer_ntree.nodes.new( constants.NODES["COORDS"] )
+        
+        self.layer_ntree.links.new( coord.outputs["UV"], mapp.inputs[0] )
+        self.layer_ntree.links.new( mapp.outputs[0], tex.inputs[0] )
+        return tex
+            
+            
+    def get_channel_data_type(self, channel_uid):
+        """ returns the type of data that this channel is set to for this layer
+        return in ("COL", "TEX")
+        """
+        node = self.get_channel_value_node( channel_uid )
+
+        if node.bl_idname in [ constants.NODES["RGB"], constants.NODES["MIX"] ]:
+            return "COL"
+        
+        elif node.bl_idname == constants.NODES["TEX"]:
+            return "TEX"
+        
+    
+    def cycle_channel_data_type(self, channel_uid):
+        """ cycles the type of data this channel is set to in ("COL", "TEX") """
+        data_type = self.get_channel_data_type( channel_uid )
+        node = self.get_channel_value_node( channel_uid )
+        connect_socket = node.outputs[0].links[0].to_socket
+
+        node_utils.remove_connected_left( self.layer_ntree, node )
+
+        if data_type == "COL":
+            tex = self.__texture_setup()
+            self.layer_ntree.links.new( tex.outputs[0], connect_socket )
+        
+        elif data_type == "TEX":
+            value_node = self.setup_fill_value_node( self.mat.lp.channel_by_uid(channel_uid) )
+            self.layer_ntree.links.new( value_node.outputs[0], connect_socket )
