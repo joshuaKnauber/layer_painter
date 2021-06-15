@@ -22,6 +22,41 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
     def draw_header(self, context):
         self.layout.label(text=f"{context.active_object.active_material.lp.active.node.label} Settings")
 
+
+    def draw(self, context):
+        layout = self.layout
+        mat = utils.get_active_material(context)
+        layer = mat.lp.active
+        
+        # NO CHANNELS
+        if len(mat.lp.channels) == 0:
+            row = layout.row()
+            row.scale_y = 1.5
+            row.operator("lp.pbr_setup", icon="ADD").material = mat.name
+            layout.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit custom channels")
+        
+        # LAYER SETTINGS
+        else:
+            row = layout.row()
+            row.scale_y = 1.2
+            row.prop(context.scene.lp, "layer_nav", expand=True)
+            layout.separator(factor=1)
+            
+            # LAYER SETTINGS
+            if context.scene.lp.layer_nav == "LAYER":
+                for channel in mat.lp.channels:
+                    channel_mix = layer.get_channel_node( channel.uid )
+                    self.draw_channel(layout, layer, channel, channel_mix)
+
+            # MASK SETTINGS
+            elif context.scene.lp.layer_nav == "MASKS":
+                layout.label(text="Placeholder")
+            
+            # FILTER SETTINGS
+            elif context.scene.lp.layer_nav == "FILTERS":
+                layout.label(text="Placeholder")
+
+
     def draw_channel(self, layout, layer, channel, channel_mix):
         box = layout.box()
         row = box.row(align=True)
@@ -39,18 +74,3 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
             row = box.row()
             row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
-
-    def draw(self, context):
-        layout = self.layout
-        mat = utils.get_active_material(context)
-        layer = mat.lp.active
-        
-        for channel in mat.lp.channels:
-            channel_mix = layer.get_channel_node( channel.uid )
-            self.draw_channel(layout, layer, channel, channel_mix)
-                
-        if len(mat.lp.channels) == 0:
-            row = layout.row()
-            row.scale_y = 1.5
-            row.operator("lp.pbr_setup", icon="ADD").material = mat.name
-            layout.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit custom channels")
