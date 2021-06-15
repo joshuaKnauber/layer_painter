@@ -24,31 +24,30 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
     def draw_channel(self, layout, layer, channel, channel_mix):
         box = layout.box()
-        row = box.row()
+        row = box.row(align=True)
+        
+        hide_icon = "CHECKBOX_DEHLT" if channel_mix.mute else "CHECKBOX_HLT"
+        row.prop(channel_mix, "mute", text="", invert_checkbox=True, icon=hide_icon, emboss=False)
         
         split = row.split(factor=0.45)
         split.label(text=channel.name)
         
-        row = split.row()
-        row.prop(channel_mix, "blend_type", text="", emboss=False)
-        row.prop(layer.get_channel_opacity_socket( channel.uid ), "default_value", text="", slider=True)
+        if not channel_mix.mute:
+            row = split.row()
+            row.prop(channel_mix, "blend_type", text="", emboss=False)
+            row.prop(layer.get_channel_opacity_socket( channel.uid ), "default_value", text="", slider=True)
 
-        row = box.row()
-        row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
+            row = box.row()
+            row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
 
     def draw(self, context):
         layout = self.layout
         mat = utils.get_active_material(context)
         layer = mat.lp.active
         
-        grid = layout.grid_flow(align=True, row_major=True, even_columns=True, columns=4)
-        for channel in mat.lp.channels:
-            grid.prop(layer.node.node_tree.nodes[ channel.uid ], "mute", invert_checkbox=True, toggle=True, text=channel.name)
-        
         for channel in mat.lp.channels:
             channel_mix = layer.get_channel_node( channel.uid )
-            if not channel_mix.mute:
-                self.draw_channel(layout, layer, channel, channel_mix)
+            self.draw_channel(layout, layer, channel, channel_mix)
                 
         if len(mat.lp.channels) == 0:
             row = layout.row()
