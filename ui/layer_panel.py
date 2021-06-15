@@ -38,6 +38,7 @@ class LP_PT_LayerPanel(bpy.types.Panel):
     bl_category = "Layer Painter"
     bl_label = ""
     bl_order = 1
+    bl_options = {"HEADER_LAYOUT_EXPAND"}
     
     @classmethod
     def poll(cls, context):
@@ -45,6 +46,16 @@ class LP_PT_LayerPanel(bpy.types.Panel):
 
     def draw_header(self, context):
         self.layout.label(text=f"{context.active_object.active_material.name} Layers")
+
+        mat = utils.get_active_material(context)
+
+        if len(mat.lp.channels):
+            row = self.layout.row(align=True)
+            row.alignment = "RIGHT"
+            row.prop(mat.lp, "use_preview", text="", icon="GHOST_ENABLED")
+            
+            if mat.lp.use_preview:
+                row.prop(mat.lp, "preview_channel", text="")
         
     def draw_controls(self, layout, mat):
         box = layout.box()
