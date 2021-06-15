@@ -42,12 +42,13 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             row.prop(context.scene.lp, "layer_nav", expand=True)
             layout.separator(factor=1)
             
-            # LAYER MAPPING
-            self.draw_mapping(layout, context, layer)
-            layout.separator(factor=1)
-            
             # LAYER SETTINGS
             if context.scene.lp.layer_nav == "LAYER":
+
+                # LAYER MAPPING
+                self.draw_mapping(layout, context, layer)
+                layout.separator(factor=1)
+                
                 for channel in mat.lp.channels:
                     channel_mix = layer.get_channel_node( channel.uid )
                     self.draw_channel(layout, mat, layer, channel, channel_mix)
