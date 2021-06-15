@@ -16,7 +16,7 @@ bl_info = {
     "name" : "Layer Painter",
     "author" : "Joshua Knauber",
     "description" : "Layer based texture painting inside blender",
-    "blender" : (2, 92, 0),
+    "blender" : (2, 93, 0),
     "version" : (2, 0, 0),
     "location" : "",
     "category" : "Material",

@@ -1,3 +1,5 @@
+**This Readme is work in progress!!!**
+
 # Layer Painter
 
 Layer Painter is a addon for blender, made to bring a workflow similar to a tool like substance painter or armor paint directly inside blender.
