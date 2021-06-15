@@ -8,3 +8,8 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
                                       items=[("LAYER", "Layer", "Layer settings"),
                                              ("MASKS", "Masks", "Mask settings"),
                                              ("FILTERS", "Filters", "Filter settings")])
+    
+    
+    expand_mapping: bpy.props.BoolProperty(name="Expand",
+                                    description="Show the mapping settings of the layer",
+                                    default=True)

@@ -106,6 +106,14 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             
         elif self.layer_type == "PAINT":
             return None #TODO?
+        
+        
+    def __get_channel_texture_nodes(self, uid):
+        """ returns the texture nodes for the given channel. Only use if you know this channel uses TEX data """
+        tex = self.get_channel_value_node( uid )
+        mapp = tex.inputs[0].links[0].from_node
+        coords = mapp.inputs[0].links[0].from_node
+        return tex, mapp, coords
     
     
     def get_channel_value_socket(self, uid):
@@ -408,7 +416,67 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             tex = self.__texture_setup()
             self.layer_ntree.links.new( tex.outputs[0], connect_socket )
             self.layer_ntree.links.new( tex.outputs[1], self.get_channel_tex_alpha_socket(channel_uid) )
+            self.update_texture_mapping()
         
         elif data_type == "TEX":
             value_node = self.setup_fill_value_node( self.mat.lp.channel_by_uid(channel_uid) )
             self.layer_ntree.links.new( value_node.outputs[0], connect_socket )
+
+
+    def update_texture_mapping(self, context=None):
+        """ updates the texture mapping for this layers images """
+        for channel in self.mat.lp.channels:
+            if self.get_channel_data_type( channel.uid ) == "TEX":
+                tex, mapp, coords = self.__get_channel_texture_nodes( channel.uid )
+                
+                if self.tex_coords == "BOX":
+                    tex.projection = "BOX"
+                    tex.projection_blend = self.tex_blend
+                else:
+                    tex.projection = "FLAT"
+                    
+                mapp.inputs[1].default_value = self.tex_location
+                mapp.inputs[2].default_value = self.tex_rotation
+                mapp.inputs[3].default_value = self.tex_scale
+                
+                if self.tex_coords == "UV":
+                    self.layer_ntree.links.new( coords.outputs["UV"], mapp.inputs[0] )
+                elif self.tex_coords == "BOX":
+                    self.layer_ntree.links.new( coords.outputs["Object"], mapp.inputs[0] )
+                elif self.tex_coords == "GENERATED":
+                    self.layer_ntree.links.new( coords.outputs["Generated"], mapp.inputs[0] )
+    
+    
+    tex_coords: bpy.props.EnumProperty(name="Mapping",
+                                        description="Coordinates to use for the texture mapping",
+                                        items=[("UV","Uv","Uv coordinates"),
+                                               ("BOX","Box","Box/Object mapping"),
+                                               ("GENERATED","Generated","Generated coordinates")],
+                                        update=update_texture_mapping)
+    
+    
+    tex_location: bpy.props.FloatVectorProperty(name="Location",
+                                        description="The location of the texture mapping",
+                                        default=(0, 0, 0),
+                                        unit="LENGTH",
+                                        update=update_texture_mapping)
+    
+    
+    tex_rotation: bpy.props.FloatVectorProperty(name="Rotation",
+                                        description="The rotation of the texture mapping",
+                                        default=(0, 0, 0),
+                                        unit="ROTATION",
+                                        update=update_texture_mapping)
+    
+    
+    tex_scale: bpy.props.FloatVectorProperty(name="Scale",
+                                        description="The scale of the texture mapping",
+                                        default=(1, 1, 1),
+                                        update=update_texture_mapping)
+    
+    
+    tex_blend: bpy.props.FloatProperty(name="Blend",
+                                        description="Blend factor for the object mapping",
+                                        default=0,
+                                        min=0, max=1,
+                                        update=update_texture_mapping)

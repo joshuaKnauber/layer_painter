@@ -42,6 +42,10 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             row.prop(context.scene.lp, "layer_nav", expand=True)
             layout.separator(factor=1)
             
+            # LAYER MAPPING
+            self.draw_mapping(layout, context, layer)
+            layout.separator(factor=1)
+            
             # LAYER SETTINGS
             if context.scene.lp.layer_nav == "LAYER":
                 for channel in mat.lp.channels:
@@ -55,6 +59,28 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             # FILTER SETTINGS
             elif context.scene.lp.layer_nav == "FILTERS":
                 layout.label(text="Placeholder")
+                
+                
+    def draw_mapping(self, layout, context, layer):
+        box = layout.box()
+        row = box.row()
+        expand_icon = "TRIA_DOWN" if context.scene.lp.expand_mapping else "TRIA_RIGHT"
+        row.prop(context.scene.lp, "expand_mapping", text="", emboss=False, icon=expand_icon)
+        
+        row.prop(layer, "tex_coords", text="")
+
+        if context.scene.lp.expand_mapping:
+            if layer.tex_coords == "BOX":
+                row.prop(layer, "tex_blend", slider=True)
+
+            row = box.row()
+            
+            col = row.column()
+            col.prop(layer, "tex_location")
+            col = row.column()
+            col.prop(layer, "tex_rotation")
+            col = row.column()
+            col.prop(layer, "tex_scale")
 
 
     def draw_channel(self, layout, mat, layer, channel, channel_mix):
