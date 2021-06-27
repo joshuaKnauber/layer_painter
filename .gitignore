@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 *.blend1
+
+assets/mask_files/*
+!assets/mask_files/_lp_masks.blend

@@ -25,10 +25,11 @@ bl_info = {
 
 
 import bpy
-from . import handlers, addon, ui, data, operators
+from . import handlers, addon, ui, data, operators, assets
 
 
 def register():
+    assets.register()
     addon.register()
     handlers.register()
     data.register()
@@ -42,3 +43,4 @@ def unregister():
     data.unregister()
     handlers.unregister()
     addon.unregister()
+    assets.unregister()

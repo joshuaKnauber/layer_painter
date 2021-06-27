@@ -55,7 +55,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
             # MASK SETTINGS
             elif context.scene.lp.layer_nav == "MASKS":
-                layout.label(text="Placeholder")
+                self.draw_masks(layout, mat, layer)
             
             # FILTER SETTINGS
             elif context.scene.lp.layer_nav == "FILTERS":
@@ -114,3 +114,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
             elif data_type == "TEX":
                 row.template_ID(layer.get_channel_value_node( channel.uid ), "image", new="image.new", open="image.open")
+                
+                
+    def draw_masks(self, layout, mat, layer):
+        pass

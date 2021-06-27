@@ -13,7 +13,7 @@ class LP_PT_NodeChannels(bpy.types.Panel):
     
     @classmethod
     def poll(cls, context):
-        ntree = context.space_data.node_tree
+        ntree = context.space_data.edit_tree
         if interface_utils.base_poll(context) and ntree and ntree.bl_idname == "ShaderNodeTree":
             node = ntree.nodes.active
             if ntree == context.active_object.active_material.node_tree:

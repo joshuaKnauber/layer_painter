@@ -1,3 +1,5 @@
+import os
+
 # the name of the module this addon lives in
 MODULE = "layer_painter"
 
@@ -31,3 +33,9 @@ PREVIEW_EMIT_NAME = "LP Preview Emit"
 
 # name of the preview output node
 PREVIEW_OUT_NAME = "LP Preview Out"
+
+# path to the asset json file
+ASSETS_JSON = os.path.join( os.path.dirname(__file__), "assets",  "assets.json" )
+
+# path to the lp mask files
+MASK_PATH = os.path.join( os.path.dirname(__file__), "assets", "mask_files" )

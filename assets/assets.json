@@ -1,0 +1,10 @@
+{
+    "masks": {
+        "_lp_masks.blend": {
+            "name": "_lp_masks",
+            "groups": [
+                "Noise"
+            ]
+        }
+    }
+}
