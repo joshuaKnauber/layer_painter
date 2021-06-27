@@ -10,29 +10,27 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
- 
-
-bl_info = {
-    "name" : "Layer Painter",
-    "author" : "Joshua Knauber",
-    "description" : "Layer based texture painting inside blender",
-    "blender" : (2, 93, 0),
-    "version" : (2, 0, 0),
-    "location" : "",
-    "category" : "Material",
-    "wiki_url" : ""
-}
 
 
-import bpy
 from . import handlers, addon, ui, data, operators, assets
+import bpy
+bl_info = {
+    "name": "Layer Painter",
+    "author": "Joshua Knauber",
+    "description": "Layer based texture painting inside blender",
+    "blender": (2, 93, 0),
+    "version": (2, 0, 0),
+    "location": "",
+    "category": "Material",
+    "wiki_url": ""
+}
 
 
 def register():
     assets.register()
-    addon.register()
     handlers.register()
     data.register()
+    addon.register()
     operators.register()
     ui.register()
 
@@ -40,7 +38,7 @@ def register():
 def unregister():
     ui.unregister()
     operators.unregister()
+    addon.unregister()
     data.unregister()
     handlers.unregister()
-    addon.unregister()
     assets.unregister()

@@ -24,7 +24,7 @@ def register():
     bpy.types.NodeSocketColor.uid = bpy.props.StringProperty()
 
     bpy.types.NodeSocketInterfaceFloat.lp_group = bpy.props.PointerProperty(
-        type=group.LP_AssetProperties)
+        type=group.LP_AssetSocketProperties)
     bpy.types.NodeSocketInterfaceFloatFactor.lp_group = bpy.props.PointerProperty(
         type=group.LP_AssetSocketProperties)
     bpy.types.NodeSocketInterfaceColor.lp_group = bpy.props.PointerProperty(
@@ -32,7 +32,7 @@ def register():
 
     bpy.types.ShaderNodeTree.uid = bpy.props.StringProperty()
     bpy.types.ShaderNodeTree.lp_group = bpy.props.PointerProperty(
-        type=group.LP_AssetSocketProperties)
+        type=group.LP_AssetProperties)
 
 
 def unregister():
