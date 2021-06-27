@@ -19,9 +19,6 @@ class LP_AssetProperties(bpy.types.PropertyGroup):
                                     default=False,
                                     update=update_group_status)
 
-    thumbnail: bpy.props.PointerProperty(
-        type=bpy.types.Image, name="Thumbnail")
-
 
 class LP_AssetSocketProperties(bpy.types.PropertyGroup):
 
