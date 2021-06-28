@@ -12,7 +12,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-from . import handlers, addon, ui, data, operators, assets
+from . import handlers, addon, ui, data, operators
 import bpy
 bl_info = {
     "name": "Layer Painter",
@@ -27,7 +27,6 @@ bl_info = {
 
 
 def register():
-    assets.register()
     handlers.register()
     data.register()
     addon.register()
@@ -41,4 +40,3 @@ def unregister():
     addon.unregister()
     data.unregister()
     handlers.unregister()
-    assets.unregister()

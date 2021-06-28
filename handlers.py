@@ -3,7 +3,6 @@ from bpy.app.handlers import persistent
 import atexit
 from .utils import make_uid
 from .data import channel, layer
-from .assets.assets import load_assets
 
 
 def set_material_uids():
@@ -18,7 +17,6 @@ def on_load_handler(dummy):
     channel.clear_caches()
     layer.clear_caches()
     set_material_uids()
-    load_assets()
 
 
 @persistent
