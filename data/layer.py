@@ -19,15 +19,23 @@ def clear_caches():
 class LP_LayerProperties(bpy.types.PropertyGroup):
 
     @property
-    def mat(self):
-        global cached_materials
-        if self.mat_uid_ref in cached_materials:
-            return cached_materials[self.mat_uid_ref]
-
+    def __material_by_ref(self):
         for material in bpy.data.materials:
             if material.lp.uid == self.mat_uid_ref:
                 cached_materials[self.mat_uid_ref] = material
                 return material
+
+    @property
+    def mat(self):
+        global cached_materials
+        if self.mat_uid_ref in cached_materials:
+            try:
+                if cached_materials[self.mat_uid_ref].name:
+                    return cached_materials[self.mat_uid_ref]
+            except:
+                return self.__material_by_ref
+
+        return self.__material_by_ref
 
     @property
     def node(self):
