@@ -77,9 +77,9 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
         self.layer_type = layer_type
 
-        # self.__add_preview_output()
-        # self.__add_layer_opacity()
-        # self.setup_channels()
+        self.__add_preview_output()
+        self.__add_layer_opacity()
+        self.setup_channels()
 
     def get_layer_opacity_socket(self):
         """ returns this layers opacity nodes socket """

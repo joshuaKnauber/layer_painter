@@ -18,7 +18,7 @@ class LP_OT_PbrSetup(bpy.types.Operator):
     def poll(cls, context):
         return operator_utils.base_poll(context)
 
-    def add_missing(self, mat, princ, bump, out):
+    def add_missing(self, mat, princ, normal, bump, out):
         if not out:
             out = mat.node_tree.nodes.new(constants.NODES["OUT"])
         if not princ:
@@ -31,32 +31,39 @@ class LP_OT_PbrSetup(bpy.types.Operator):
             bump.location = (princ.location[0], princ.location[1]-630)
         if not bump.outputs[0].is_linked:
             mat.node_tree.links.new(bump.outputs[0], princ.inputs["Normal"])
-        return princ, bump, out
+        if not normal:
+            normal = mat.node_tree.nodes.new(constants.NODES["NORMAL"])
+            normal.location = (princ.location[0], princ.location[1]-820)
+        if not normal.outputs[0].is_linked:
+            mat.node_tree.links.new(normal.outputs[0], bump.inputs["Normal"])
+        return princ, normal, bump, out
 
     def get_nodes(self, mat):
-        princ, bump, out = None, None, None
+        princ, normal, bump, out = None, None, None, None
         for node in mat.node_tree.nodes:
             if node.bl_idname == constants.NODES["PRINC"]:
                 princ = node
+            elif node.bl_idname == constants.NODES["NORMAL"]:
+                normal = node
             elif node.bl_idname == constants.NODES["BUMP"]:
                 bump = node
             elif node.bl_idname == constants.NODES["OUT"]:
                 out = node
-        return self.add_missing(mat, princ, bump, out)
+        return self.add_missing(mat, princ, normal, bump, out)
 
     def execute(self, context):
         mat = bpy.data.materials[self.material]
-        princ, bump, _ = self.get_nodes(mat)
+        princ, normal, bump, out = self.get_nodes(mat)
 
         color = mat.lp.add_channel(princ.inputs["Base Color"])
         color.default_enable = True
         channel = mat.lp.add_channel(princ.inputs["Roughness"])
         channel = mat.lp.add_channel(princ.inputs["Metallic"])
         channel = mat.lp.add_channel(princ.inputs["Emission"])
-        channel = mat.lp.add_channel(bump.inputs["Normal"])
-        channel.name = "Normal"
         channel = mat.lp.add_channel(bump.inputs["Height"])
         channel.name = "Height"
+        channel = mat.lp.add_channel(normal.inputs["Color"])
+        channel.name = "Normal"
 
         if len(mat.lp.layers) == 1:
             mat.lp.layers[0].get_channel_node(color.uid).mute = False
