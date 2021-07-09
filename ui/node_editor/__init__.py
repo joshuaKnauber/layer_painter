@@ -1,5 +1,5 @@
 import bpy
-from . import node_editor, viewport
+from . import channels
 
 
 classes = (
@@ -9,11 +9,9 @@ reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 
 def register():
     reg_classes()
-    viewport.register()
-    node_editor.register()
+    channels.register()
 
 
 def unregister():
     unreg_classes()
-    viewport.unregister()
-    node_editor.unregister()
+    channels.unregister()

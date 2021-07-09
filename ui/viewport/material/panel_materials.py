@@ -1,5 +1,6 @@
 import bpy
-from . import interface_utils
+
+from layer_painter.ui import utils_ui
 
 
 class LP_PT_MaterialPanel(bpy.types.Panel):
@@ -12,7 +13,7 @@ class LP_PT_MaterialPanel(bpy.types.Panel):
     
     @classmethod
     def poll(cls, context):
-        return interface_utils.base_poll(context)
+        return utils_ui.base_poll(context)
 
     def draw_header(self, context):
         self.layout.label(text=f"{context.active_object.name} Materials")
@@ -21,11 +22,14 @@ class LP_PT_MaterialPanel(bpy.types.Panel):
         layout = self.layout
         ob = context.active_object
 
+        # material slots on active object
         row = layout.row()
         row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=3)
         
+        # add and remove material
         col = row.column(align=True)
         col.operator("object.material_slot_add", icon='ADD', text="")
         col.operator("object.material_slot_remove", icon='REMOVE', text="")
         
+        # select active material
         layout.template_ID(ob, "active_material", new="material.new")
