@@ -1,7 +1,9 @@
 import os
 
+
 # the name of the module this addon lives in
 MODULE = "layer_painter"
+
 
 # id names of different nodes for cleaner notation
 NODES = {
@@ -19,8 +21,10 @@ NODES = {
     "EMIT":     "ShaderNodeEmission",
 }
 
+
 # name of the opacity node inside a layer
 OPAC_NAME = "OPACITY"
+
 
 # name of the group input node inside a lp node group
 INPUT_NAME = "INPUTS"
@@ -28,14 +32,9 @@ INPUT_NAME = "INPUTS"
 # name of the group output node inside a lp node group
 OUTPUT_NAME = "OUTPUTS"
 
+
 # name of the preview emission node
 PREVIEW_EMIT_NAME = "LP Preview Emit"
 
 # name of the preview output node
 PREVIEW_OUT_NAME = "LP Preview Out"
-
-# path to the asset json file
-ASSETS_JSON = os.path.join( os.path.dirname(__file__), "assets",  "assets.json" )
-
-# path to the lp mask files
-MASK_PATH = os.path.join( os.path.dirname(__file__), "assets", "mask_files" )

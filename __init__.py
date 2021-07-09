@@ -12,17 +12,22 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-from . import handlers, addon, ui, data, operators
 import bpy
+
+from . import handlers, addon, ui, data, operators
+
+
 bl_info = {
     "name": "Layer Painter",
     "author": "Joshua Knauber",
     "description": "Layer based texture painting inside blender",
     "blender": (2, 93, 0),
     "version": (2, 0, 0),
-    "location": "",
+    "location": "View3D > N-Panel > Layer Painter",
     "category": "Material",
-    "wiki_url": ""
+    "wiki_url": "https://github.com/joshuaKnauber/layer_painter",
+    "tracker_url": "https://github.com/joshuaKnauber/layer_painter/issues",
+    "warning": "This version of Layer Painter is still under heavy development!"
 }
 
 
