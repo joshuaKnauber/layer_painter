@@ -24,7 +24,9 @@ NODES = {
 
 # id names of different sockets for cleaner notation
 SOCKETS = {
-    "COLOR":      "NodeSocketColor",
+    "COLOR":        "NodeSocketColor",
+    "FLOAT":        "NodeSocketFloat",
+    "FLOAT_FACTOR": "NodeSocketFloatFactor",
 }
 
 

@@ -1,6 +1,6 @@
 import bpy
 
-from layer_painter import utils
+from layer_painter import utils, constants
 from layer_painter.ui import utils_ui
 
 
@@ -36,7 +36,7 @@ class LP_PT_NodeChannels(bpy.types.Panel):
         
         # draw all valid node inputs
         for inp in node.inputs:
-            if inp.bl_rna.identifier in ["NodeSocketFloat", "NodeSocketFloatFactor", "NodeSocketColor"]:
+            if inp.bl_rna.identifier in [constants.SOCKETS["COLOR"], constants.SOCKETS["FLOAT"], constants.SOCKETS["FLOAT_FACTOR"]]:
 
                 # draw normal input
                 if not inp.uid:
