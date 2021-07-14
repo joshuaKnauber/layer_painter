@@ -1,5 +1,5 @@
 import bpy
-from . import operator_utils
+from . import utils_operator
 from .. import constants
 from .. import utils
 
@@ -16,7 +16,7 @@ class LP_OT_PbrSetup(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def add_missing(self, mat, princ, normal, bump, out):
         if not out:
@@ -64,9 +64,6 @@ class LP_OT_PbrSetup(bpy.types.Operator):
         channel.name = "Height"
         channel = mat.lp.add_channel(normal.inputs["Color"])
         channel.name = "Normal"
-
-        if len(mat.lp.layers) == 1:
-            mat.lp.layers[0].get_channel_node(color.uid).mute = False
 
         utils.redraw()
         return {"FINISHED"}

@@ -24,7 +24,7 @@ def make_uid( length=10 ):
     return uuid4().hex[:length]
 
 
-def get_active_material(context):
+def active_material(context):
     """ returns the active material or None if there isn't any """
     if context.active_object and context.active_object.type == "MESH":
         return context.active_object.active_material

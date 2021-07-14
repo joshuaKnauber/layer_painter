@@ -1,10 +1,10 @@
 import bpy
-from .. import utils
+from layer_painter import utils
 
 
 def base_poll(context):
     """ basic poll function for all lp operators """
-    return utils.get_active_material(context) != None
+    return utils.active_material(context) != None
 
 
 def get_input(material_name, node_name, input_name):

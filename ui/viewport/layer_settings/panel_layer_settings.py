@@ -1,7 +1,8 @@
 import bpy
 
-from layer_painter import utils
+from layer_painter import utils, constants
 from layer_painter.ui import utils_ui
+from layer_painter.data.materials.layers import layer_fill
 
 
 class LP_PT_LayerSettingsPanel(bpy.types.Panel):
@@ -14,62 +15,71 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
     
     @classmethod
     def poll(cls, context):
-        mat = utils.get_active_material(context)
+        mat = utils.active_material(context)
         if utils_ui.base_poll(context) and \
-            mat != None and \
-            mat.lp.active != None:
-            return (not mat.lp.has_faulty_layers) and (not mat.lp.has_faulty_channels)
+            mat != None:
+            return mat.lp.selected != None
         return False
 
     def draw_header(self, context):
         # layer settings title
-        mat = utils.get_active_material(context)
-        self.layout.label(text=f"{ mat.lp.active.node.label } Settings")
+        mat = utils.active_material(context)
+        self.layout.label(text=f"{ mat.lp.selected.node.label } Settings")
 
     def draw(self, context):
         layout = self.layout
-        mat = utils.get_active_material(context)
-        layer = mat.lp.active
+        mat = utils.active_material(context)
+        layer = mat.lp.selected
         
-        # no channels info
-        if len(mat.lp.channels) == 0:
-            
-            # pbr setup button
-            row = layout.row()
-            row.scale_y = 1.5
-            row.operator("lp.pbr_setup", icon="ADD").material = mat.name
+        # draw missing layer group warning
+        if not layer.node:
+            layout.label(text="Layer is missing it's node!")
 
-            # switch to node editor button
-            layout.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit custom channels")
-        
-        # draw layer settings
         else:
-            
-            # layer navigation
-            row = layout.row()
-            row.scale_y = 1.2
-            row.prop(context.scene.lp, "layer_nav", expand=True)
-            layout.separator(factor=1)
-            
-            # layer settings
-            if context.scene.lp.layer_nav == "LAYER":
+            # no channels info
+            if len(mat.lp.channels) == 0:
+                
+                # pbr setup button
+                row = layout.row()
+                row.scale_y = 1.5
+                row.operator("lp.pbr_setup", icon="ADD").material = mat.name
 
-                # layer mapping
-                self.draw_mapping(layout, context, layer)
+                # switch to node editor button
+                layout.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit custom channels")
+            
+            # draw layer settings
+            else:
+                
+                # layer navigation
+                row = layout.row()
+                row.scale_y = 1.2
+                row.prop(context.scene.lp, "layer_nav", expand=True)
                 layout.separator(factor=1)
                 
-                # channel settings
-                for channel in mat.lp.channels:
-                    channel_mix = layer.get_channel_node( channel.uid )
-                    self.draw_channel(layout, mat, layer, channel, channel_mix)
+                # layer settings
+                if context.scene.lp.layer_nav == "LAYER":
+                    
+                    # draw fill settings
+                    if layer.layer_type == "FILL":
+                        # layer mapping
+                        self.draw_mapping(layout, context, layer)
+                        layout.separator(factor=1)
+                        
+                        # channel settings
+                        for channel in mat.lp.channels:
+                            channel_mix = layer_fill.get_channel_mix_node(layer, channel.uid)
+                            self.draw_fill_channel(layout, mat, layer, channel, channel_mix)
+                            
+                    elif layer.layer_type == "PAINT":
+                        pass
 
-            # mask settings
-            elif context.scene.lp.layer_nav == "MASKS":
-                self.draw_masks(layout, mat, layer)
-            
-            # filter settings
-            elif context.scene.lp.layer_nav == "FILTERS":
-                layout.label(text="Placeholder")
+                # mask settings
+                elif context.scene.lp.layer_nav == "MASKS":
+                    self.draw_masks(layout, mat, layer)
+                
+                # filter settings
+                elif context.scene.lp.layer_nav == "FILTERS":
+                    layout.label(text="Placeholder")
                 
                 
     def draw_mapping(self, layout, context, layer):
@@ -101,7 +111,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             col.prop(layer, "tex_scale")
 
 
-    def draw_channel(self, layout, mat, layer, channel, channel_mix):
+    def draw_fill_channel(self, layout, mat, layer, channel, channel_mix):
         box = layout.box()
         row = box.row(align=True)
         
@@ -121,11 +131,11 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             row.prop(channel_mix, "blend_type", text="", emboss=False)
 
             # channel opacity
-            row.prop(layer.get_channel_opacity_socket( channel.uid ), "default_value", text="", slider=True)
+            row.prop(layer_fill.get_channel_opacity_socket(layer, channel.uid), "default_value", text="", slider=True)
 
             # draw channel data settings
             row = box.row(align=True)
-            data_type = mat.lp.get_channel_data_type(layer, channel.uid)
+            data_type = layer_fill.get_channel_data_type(layer, channel.uid)
 
             # channel data type cycle button
             data_icon = "SHADING_RENDERED" if data_type == "COL" else "SHADING_TEXTURE"
@@ -136,11 +146,16 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             
             # channel color value
             if data_type == "COL":
-                row.prop(layer.get_channel_value_socket( channel.uid ), "default_value", text="", slider=True)
+                value_node = layer_fill.get_channel_value_node(layer, channel.uid)
+
+                if value_node.bl_idname == constants.NODES["RGB"]:
+                    row.prop(value_node.outputs[0], "default_value", text="")
+                else:
+                    row.prop(value_node.inputs[0], "default_value", text="", slider=True)
 
             # channel texture value
             elif data_type == "TEX":
-                row.template_ID(layer.get_channel_value_node( channel.uid ), "image", new="image.new", open="image.open")
+                row.template_ID(layer_fill.get_channel_value_node(layer, channel.uid), "image", new="image.new", open="image.open")
                 
                 
     def draw_masks(self, layout, mat, layer):

@@ -22,6 +22,12 @@ NODES = {
 }
 
 
+# id names of different sockets for cleaner notation
+SOCKETS = {
+    "COLOR":      "NodeSocketColor",
+}
+
+
 # name of the opacity node inside a layer
 OPAC_NAME = "OPACITY"
 
@@ -32,6 +38,9 @@ INPUT_NAME = "INPUTS"
 # name of the group output node inside a lp node group
 OUTPUT_NAME = "OUTPUTS"
 
+
+# name of the preview output
+PREVIEW_OUT_NAME = "PREVIEW"
 
 # name of the preview emission node
 PREVIEW_EMIT_NAME = "LP Preview Emit"

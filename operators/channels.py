@@ -1,6 +1,6 @@
 import bpy
 from .. import utils
-from . import operator_utils
+from . import utils_operator
 
 
 class LP_OT_MakeChannel(bpy.types.Operator):
@@ -23,10 +23,10 @@ class LP_OT_MakeChannel(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
-        inp = operator_utils.get_input(self.material, self.node, self.input)
+        inp = utils_operator.get_input(self.material, self.node, self.input)
         if inp:
             bpy.data.materials[self.material].lp.add_channel( inp )
         utils.redraw()
@@ -55,14 +55,14 @@ class LP_OT_RemoveChannel(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         if self.overwrite_uid:
             bpy.data.materials[self.material].lp.remove_channel( self.overwrite_uid )
 
         else:
-            inp = operator_utils.get_input(self.material, self.node, self.input)
+            inp = utils_operator.get_input(self.material, self.node, self.input)
             if inp:
                 bpy.data.materials[self.material].lp.remove_channel( inp )
         utils.redraw()
@@ -85,7 +85,7 @@ class LP_OT_MoveChannelUp(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.move_channel_up( self.channel_uid )
@@ -109,7 +109,7 @@ class LP_OT_MoveChannelDown(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.move_channel_down( self.channel_uid )

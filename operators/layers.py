@@ -1,6 +1,7 @@
 import bpy
-from . import operator_utils
+from . import utils_operator
 from .. import utils
+from layer_painter.data.materials.layers import layer_fill
 
 
 class LP_OT_AddFillLayer(bpy.types.Operator):
@@ -15,7 +16,7 @@ class LP_OT_AddFillLayer(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.add_fill_layer()
@@ -35,7 +36,7 @@ class LP_OT_AddPaintLayer(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.add_paint_layer()
@@ -57,14 +58,14 @@ class LP_OT_RemoveLayer(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        mat = utils.get_active_material(context)
-        return operator_utils.base_poll(context) and mat.lp.active
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected
 
     def execute(self, context):
         mat = bpy.data.materials[self.material]
         
         if self.overwrite_uid:
-            mat.lp.selected = mat.lp.layer_uid_index( self.overwrite_uid )
+            mat.lp.selected_index = mat.lp.layer_uid_index( self.overwrite_uid )
             
         mat.lp.remove_active_layer()
         utils.redraw()
@@ -83,8 +84,8 @@ class LP_OT_MoveLayerUp(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        mat = utils.get_active_material(context)
-        return operator_utils.base_poll(context) and mat.lp.selected < len(mat.lp.layers)-1
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected_index < len(mat.lp.layers)-1
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.move_active_layer_up()
@@ -104,8 +105,8 @@ class LP_OT_MoveLayerDown(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        mat = utils.get_active_material(context)
-        return operator_utils.base_poll(context) and mat.lp.selected > 0
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected_index > 0
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.move_active_layer_down()
@@ -129,14 +130,14 @@ class LP_OT_CycleChannelData(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return operator_utils.base_poll(context)
+        return utils_operator.base_poll(context)
 
     def execute(self, context):
         mat = bpy.data.materials[self.material]
         layer = mat.lp.layer_by_uid( self.layer_uid )
 
         if layer:
-            mat.lp.cycle_channel_data_type( layer, self.channel_uid )
+            layer_fill.cycle_channel_data_type(layer, self.channel_uid)
 
         utils.redraw()
         return {"FINISHED"}

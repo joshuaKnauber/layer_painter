@@ -16,10 +16,10 @@ class LP_PT_LayerPanel(bpy.types.Panel):
     @classmethod
     def poll(cls, context):
         return utils_ui.base_poll(context) and \
-            utils.get_active_material(context) != None
+            utils.active_material(context) != None
 
     def draw_header(self, context):
-        mat = utils.get_active_material(context)
+        mat = utils.active_material(context)
 
         # material panel title
         self.layout.label(text=f"{mat.name} Layers")
@@ -36,7 +36,6 @@ class LP_PT_LayerPanel(bpy.types.Panel):
     def draw_operators(self, layout, mat):
         box = layout.box()
         row = box.row()
-        row.enabled = (not mat.lp.has_faulty_layers) and (not mat.lp.has_faulty_channels)
         
         # add layer operators
         sub_row = row.row(align=False)
@@ -54,26 +53,30 @@ class LP_PT_LayerPanel(bpy.types.Panel):
         sub_row.operator("lp.remove_layer", text="", icon="TRASH", emboss=False).material = mat.name
 
     def draw(self, context):
-        mat = utils.get_active_material(context)
+        mat = utils.active_material(context)
         layout = self.layout
         col = layout.column(align=True)
         
         self.draw_operators(col, mat)
         
-        if mat.lp.has_faulty_channels:
-            box = col.box()
-            box.alert = True
-            box.label(text="Faulty channels found!", icon="ERROR")
-            box.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit channels")
-
-        else:
-            # draw layer list
-            row = col.row(align=True)
-            row.scale_y = 1.25
-            row.template_list("LP_UL_Layers", "material_layers",
-                                mat.lp, "layers",
-                                mat.lp, "selected",rows=3,sort_reverse=True)
+        # draw layer list
+        row = col.row(align=True)
+        row.scale_y = 1.25
+        row.template_list("LP_UL_Layers", "material_layers",
+                            mat.lp, "layers",
+                            mat.lp, "selected_index",rows=3,sort_reverse=True)
+        
+        # no layers info
+        if len(mat.lp.layers) == 0:
+            col.label(text="No layers added", icon="INFO")
             
-            # no layers info
-            if len(mat.lp.layers) == 0:
-                col.label(text="No layers added", icon="INFO")
+            # no channels info
+            if len(mat.lp.channels) == 0:
+                # pbr setup button
+                layout.separator()
+                row = layout.row()
+                row.scale_y = 1.5
+                row.operator("lp.pbr_setup", icon="ADD").material = mat.name
+
+                # switch to node editor button
+                layout.operator("lp.switch_to_node_editor", icon="WINDOW", text="Edit custom channels")

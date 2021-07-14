@@ -12,7 +12,7 @@ class LP_UL_Layers(bpy.types.UIList):
         if layer.node:
             self.draw_layer(row, layer)
         else:
-            self.draw_faulty_layer(row, utils.get_active_material(context), layer)
+            self.draw_faulty_layer(row, utils.active_material(context), layer)
             
     
     def draw_faulty_layer(self, layout, mat, layer):

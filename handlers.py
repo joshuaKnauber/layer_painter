@@ -3,7 +3,8 @@ from bpy.app.handlers import persistent
 import atexit
 
 from layer_painter.utils import make_uid
-from layer_painter.data import channel, layer
+from layer_painter.data.materials.channels import channel
+from layer_painter.data.materials.layers import layer
 
 
 def set_material_uids():

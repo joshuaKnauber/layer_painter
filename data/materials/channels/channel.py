@@ -1,12 +1,14 @@
 import bpy
-from ..utils import make_uid
+from layer_painter import utils
 
 
+# holds cached materials and inputs for faster repeated access
 cached_materials = {}
 cached_inputs = {}
 
 
 def clear_caches():
+    """ clears the cached materials and inputs """
     global cached_materials
     cached_materials = {}
     global cached_inputs
@@ -17,6 +19,7 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
 
     @property
     def __material_by_ref(self):
+        """ returns the material matching the channels uid reference to it """
         for material in bpy.data.materials:
             if material.lp.uid == self.mat_uid_ref:
                 cached_materials[self.mat_uid_ref] = material
@@ -24,6 +27,7 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
 
     @property
     def mat(self):
+        """ returns the material this channel belongs to from cache or uid reference """
         global cached_materials
         if self.mat_uid_ref in cached_materials:
             try:
@@ -36,6 +40,7 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
 
     @property
     def inp(self):
+        """ returns the input this channels belongs to from cache or uid or returns None if it doesn't exist """
         global cached_inputs
         if self.uid in cached_inputs:
             if cached_inputs[self.uid].node:
@@ -49,35 +54,42 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
 
         return None
 
+
     # reference to the uid of the material this channel is in
     mat_uid_ref: bpy.props.StringProperty()
 
+    # uid to reference this channel which matches the input.uid
     uid: bpy.props.StringProperty(name="UID",
                                   description="UID of this channel. Empty if it hasn't been used by LP yet",
                                   default="")
 
+    # defines if this channel will be enabled by default when adding a new layer
     default_enable: bpy.props.BoolProperty(name="Enable",
                                            description="Turn on to enable this channel by default when adding a layer",
                                            default=False)
 
+
     def update_channel_appearance(self, context):
         """ updates this channel on all layers """
         for layer in self.mat.lp.layers:
-            layer.setup_channels(self)
+            layer.update_channel_appearance(self)
 
+    # display name of this channel
     name: bpy.props.StringProperty(name="Name",
                                    description="Name of this channel",
                                    default="",
                                    update=update_channel_appearance)
 
+
     def init(self, inp, mat_uid):
-        """ called first thing when this channel is created to set it up """
-        self.uid = make_uid()
+        """ called when this channel is created to do set up """
+        self.uid = utils.make_uid()
         inp.uid = self.uid
 
         self.mat_uid_ref = mat_uid
 
         self["name"] = inp.name
+
 
     def disable(self):
         """ stops this channels input from being associated with this channel """

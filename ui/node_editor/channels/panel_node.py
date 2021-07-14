@@ -28,42 +28,38 @@ class LP_PT_NodeChannels(bpy.types.Panel):
 
     def draw(self, context):
         layout = self.layout
-        mat = utils.get_active_material(context)
+        mat = utils.active_material(context)
         node = context.space_data.node_tree.nodes.active
 
-        if mat.lp.has_faulty_layers:
-            layout.label(text="You material has faulty layers!", icon="ERROR")
-            
-        else:
-            col = layout.column(align=True)
-            col.scale_y = 1.2
-            
-            # draw all valid node inputs
-            for inp in node.inputs:
-                if inp.bl_rna.identifier in ["NodeSocketFloat", "NodeSocketFloatFactor", "NodeSocketColor"]:
+        col = layout.column(align=True)
+        col.scale_y = 1.2
+        
+        # draw all valid node inputs
+        for inp in node.inputs:
+            if inp.bl_rna.identifier in ["NodeSocketFloat", "NodeSocketFloatFactor", "NodeSocketColor"]:
 
-                    # draw normal input
-                    if not inp.uid:
-                        
-                        # make channel button
-                        op = col.operator("lp.make_channel", text=f"{inp.name} channel", icon="ADD")
-                        op.material = utils.get_active_material(context).name
-                        op.node = node.name
-                        op.input = inp.name
-                        
-                    # draw input that is a channel
-                    else:
-                        channel = utils.get_active_material(context).lp.channel_by_inp(inp)
-                        row = col.row(align=True)
-                        
-                        # remove channel
-                        op = row.operator("lp.remove_channel", text="", icon="REMOVE")
-                        op.material = utils.get_active_material(context).name
-                        op.node = node.name
-                        op.input = inp.name
-                        
-                        # enable channel by default
-                        row.prop(channel, "default_enable", text="", icon="PINNED" if channel.default_enable else "UNPINNED")
+                # draw normal input
+                if not inp.uid:
+                    
+                    # make channel button
+                    op = col.operator("lp.make_channel", text=f"{inp.name} channel", icon="ADD")
+                    op.material = utils.active_material(context).name
+                    op.node = node.name
+                    op.input = inp.name
+                    
+                # draw input that is a channel
+                else:
+                    channel = utils.active_material(context).lp.channel_by_inp(inp)
+                    row = col.row(align=True)
+                    
+                    # remove channel
+                    op = row.operator("lp.remove_channel", text="", icon="REMOVE")
+                    op.material = utils.active_material(context).name
+                    op.node = node.name
+                    op.input = inp.name
+                    
+                    # enable channel by default
+                    row.prop(channel, "default_enable", text="", icon="PINNED" if channel.default_enable else "UNPINNED")
 
-                        # channel name
-                        row.prop(channel, "name", text="")                        
+                    # channel name
+                    row.prop(channel, "name", text="")                        
