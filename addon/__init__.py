@@ -1,5 +1,5 @@
 import bpy
-from .. import constants
+from layer_painter import constants
 from . import preferences, properties
 
 
