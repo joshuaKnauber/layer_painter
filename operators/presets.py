@@ -1,7 +1,7 @@
 import bpy
-from . import utils_operator
-from .. import constants
-from .. import utils
+
+from layer_painter.operators import utils_operator
+from layer_painter import constants, utils
 
 
 class LP_OT_PbrSetup(bpy.types.Operator):

@@ -1,6 +1,7 @@
 import bpy
-from . import utils_operator
-from .. import utils
+
+from layer_painter.operators import utils_operator
+from layer_painter import utils
 from layer_painter.data.materials.layers import layer_fill
 
 
