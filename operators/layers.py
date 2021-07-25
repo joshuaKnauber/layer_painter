@@ -2,7 +2,7 @@ import bpy
 
 from layer_painter.operators import utils_operator
 from layer_painter import utils
-from layer_painter.data.materials.layers import layer_fill
+from layer_painter.data.materials.layers.layer_types import layer_fill
 
 
 class LP_OT_AddFillLayer(bpy.types.Operator):

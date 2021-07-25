@@ -1,7 +1,8 @@
 import bpy
 
 from layer_painter import utils, constants
-from . import layer_setup, layer_channels, layer_fill
+from . import layer_setup, layer_channels
+from .layer_types import layer_fill
 
 
 # holds cached materials and layer nodes for faster repeated access

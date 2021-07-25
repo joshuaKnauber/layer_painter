@@ -2,7 +2,7 @@ import bpy
 
 from layer_painter import utils
 from layer_painter.ui import utils_ui
-from layer_painter.data.materials.layers import layer_fill
+from layer_painter.data.materials.layers.layer_types import layer_fill
 from . import fill_settings
 
 
