@@ -1,5 +1,10 @@
 import bpy
 
+import json
+
+from layer_painter.data.assets.asset import LP_AssetProperties
+from layer_painter import constants
+
 
 class LP_AddonProperties(bpy.types.PropertyGroup):
 
@@ -14,3 +19,18 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
     expand_mapping: bpy.props.BoolProperty(name="Expand",
                                            description="Show the mapping settings of the layer",
                                            default=True)
+    
+    # mask asset items
+    mask_assets: bpy.props.CollectionProperty(type=LP_AssetProperties)
+    
+    # filter asset items
+    filter_assets: bpy.props.CollectionProperty(type=LP_AssetProperties)
+    
+    @property
+    def asset_files(self):
+        """ returns all asset files that are loaded into lp as saved in the assets.json file """
+        # TODO cache these or get them some other way to not always open that file
+        asset_files = []
+        with open(constants.ASSET_FILE, "r") as asset_data:
+            asset_files = json.loads(asset_data.read())["files"]
+        return asset_files

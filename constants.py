@@ -49,3 +49,10 @@ PREVIEW_EMIT_NAME = "LP Preview Emit"
 
 # name of the preview output node
 PREVIEW_OUT_NAME = "LP Preview Out"
+
+
+# location of the asset blend files
+ASSET_LOC = os.path.join(os.path.dirname(__file__), "assets", "files")
+
+# location of the asset json file
+ASSET_FILE = os.path.join(os.path.dirname(__file__), "assets", "assets.json")

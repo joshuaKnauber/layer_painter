@@ -5,6 +5,7 @@ import atexit
 from layer_painter.utils import make_uid
 from layer_painter.data.materials.channels import channel
 from layer_painter.data.materials.layers import layer
+from layer_painter.operators.assets import load_assets
 
 
 def set_material_uids():
@@ -21,6 +22,7 @@ def on_load_handler(dummy):
     channel.clear_caches()
     layer.clear_caches()
     set_material_uids()
+    load_assets(bpy.context)
 
 
 @persistent

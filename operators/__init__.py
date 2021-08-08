@@ -1,5 +1,5 @@
 import bpy
-from . import layers, channels, presets, interface
+from . import layers, channels, presets, interface, assets
 
 
 classes = (
@@ -15,6 +15,12 @@ classes = (
     channels.LP_OT_MoveChannelDown,
     presets.LP_OT_PbrSetup,
     interface.LP_OT_SwitchToNodeEditor,
+    assets.LP_AssetImportProps,
+    assets.LP_OT_LoadFile,
+    assets.LP_OT_ProcessFile,
+    assets.LP_OT_ReloadAssets,
+    assets.LP_OT_RemoveAsset,
+    assets.LP_OT_RemoveAssetFile,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 
