@@ -1,13 +1,4 @@
 {
     "files": [
-        {
-            "file_name": "test_assets.blend",
-            "uid": "0be674aaa2",
-            "masks": [
-                "Noise",
-                "Musgrave"
-            ],
-            "filters": []
-        }
     ]
 }
