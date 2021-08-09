@@ -78,4 +78,6 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        pass
+        op = layout.operator("lp.add_mask")
+        op.group_name = "Noise"
+        op.file_uid = "0be674aaa2"

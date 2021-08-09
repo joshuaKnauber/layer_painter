@@ -1,5 +1,4 @@
 import bpy
-import os
 
 
 def get_group(blend_path, name):
@@ -8,13 +7,13 @@ def get_group(blend_path, name):
         return bpy.data.node_groups[name]
     else:
         __append_group(blend_path, name)
-        return bpy.data.node_groups[name]
+        if name in bpy.data.node_groups:
+            return bpy.data.node_groups[name]
+    return None
     
     
 def __append_group(blend_path, name):
-    """ appends the group with the given name from the given path """
-    # NOTE Could be replaced with libraries if causing errors
-    bpy.ops.wm.append(
-        filepath=os.path.join(blend_path, "NodeTree", name),
-        directory=os.path.join(blend_path, "NodeTree"),
-        filename=name)
+    """ appends the group with the given name from the given path """    
+    with bpy.data.libraries.load(blend_path) as (data_from, data_to):
+        if name in data_from.node_groups:
+            data_to.node_groups = [name]

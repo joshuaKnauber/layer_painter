@@ -37,9 +37,6 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
         row.scale_y = 1.2
         row.operator("lp.load_file", icon="IMPORT")
         row.operator("lp.reload_assets", icon="FILE_REFRESH", text="")
-            
-        if len(context.scene.lp.asset_files) == 0:
-            layout.label(text="No assets loaded!")
         
         # draw all loaded assets
         for asset_file in context.scene.lp.asset_files:

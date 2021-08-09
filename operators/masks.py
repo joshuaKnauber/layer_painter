@@ -1,0 +1,26 @@
+import bpy
+
+import os
+
+from layer_painter import constants, utils
+from layer_painter.assets import utils_import
+from layer_painter.operators import utils_operator
+
+
+class LP_OT_AddMask(bpy.types.Operator):
+    bl_idname = "lp.add_mask"
+    bl_label = "Add Mask"
+    bl_description = "Adds this mask"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+    
+    group_name: bpy.props.StringProperty(options={"HIDDEN"})
+    file_uid: bpy.props.StringProperty(options={"HIDDEN"})
+
+    @classmethod
+    def poll(cls, context):
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected
+
+    def execute(self, context):
+        group = utils_import.get_group(os.path.join(constants.ASSET_LOC, self.file_uid+".blend"), self.group_name)
+        return {"FINISHED"}
