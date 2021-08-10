@@ -1,7 +1,7 @@
 import bpy
 
-from layer_painter import utils, constants
-from layer_painter.data import utils_groups
+from ... import utils, constants
+from ...data import utils_groups
 from .layers.layer import LP_LayerProperties
 from .layers import layer_channels
 from .channels.channel import LP_ChannelProperties

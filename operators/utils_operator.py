@@ -1,5 +1,5 @@
 import bpy
-from layer_painter import utils
+from .. import utils
 
 
 def base_poll(context):

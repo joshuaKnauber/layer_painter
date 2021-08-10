@@ -2,9 +2,9 @@ import bpy
 
 import os
 
-from layer_painter import constants, utils
-from layer_painter.assets import utils_import
-from layer_painter.operators import utils_operator
+from .. import constants, utils
+from ..assets import utils_import
+from ..operators import utils_operator
 
 
 class LP_OT_AddMask(bpy.types.Operator):

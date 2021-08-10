@@ -1,7 +1,7 @@
 import bpy
 
-from layer_painter import utils
-from layer_painter.ui import utils_ui
+from .... import utils
+from ....ui import utils_ui
 
 
 class LP_PT_Channels(bpy.types.Panel):

@@ -1,5 +1,5 @@
 import bpy
-from layer_painter import constants
+from .. import constants
 
 
 class LP_AddonPreferences(bpy.types.AddonPreferences):

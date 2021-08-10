@@ -1,5 +1,5 @@
 import bpy
-from layer_painter import utils
+from .... import utils
 
 
 # holds cached materials and inputs for faster repeated access

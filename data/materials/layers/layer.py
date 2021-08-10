@@ -1,6 +1,6 @@
 import bpy
 
-from layer_painter import utils, constants
+from .... import utils, constants
 from . import layer_setup, layer_channels
 from .layer_types import layer_fill
 

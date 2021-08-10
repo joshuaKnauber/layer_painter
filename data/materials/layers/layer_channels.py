@@ -1,5 +1,5 @@
-from layer_painter import constants
-from layer_painter.data import utils_groups
+from .... import constants
+from ....data import utils_groups
 from .layer_types import layer_fill, layer_paint
 
 

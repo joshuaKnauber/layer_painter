@@ -2,10 +2,10 @@ import bpy
 from bpy.app.handlers import persistent
 import atexit
 
-from layer_painter.utils import make_uid
-from layer_painter.data.materials.channels import channel
-from layer_painter.data.materials.layers import layer
-from layer_painter.operators.assets import load_assets
+from .utils import make_uid
+from .data.materials.channels import channel
+from .data.materials.layers import layer
+from .operators.assets import load_assets
 
 
 def set_material_uids():
