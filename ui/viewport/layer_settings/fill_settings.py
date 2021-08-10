@@ -1,6 +1,6 @@
 import bpy
-from layer_painter import constants
-from layer_painter.data.materials.layers.layer_types import layer_fill
+from .... import constants
+from ....data.materials.layers.layer_types import layer_fill
 
 
 def draw_fill(layout, context, mat, layer):

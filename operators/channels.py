@@ -1,7 +1,7 @@
 import bpy
 
-from layer_painter import utils
-from layer_painter.operators import utils_operator
+from .. import utils
+from ..operators import utils_operator
 
 
 class LP_OT_MakeChannel(bpy.types.Operator):

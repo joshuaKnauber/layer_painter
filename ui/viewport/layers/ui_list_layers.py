@@ -1,6 +1,6 @@
 import bpy
 
-from layer_painter import utils
+from .... import utils
 
 
 class LP_UL_Layers(bpy.types.UIList):

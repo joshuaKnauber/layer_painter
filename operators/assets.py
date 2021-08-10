@@ -5,7 +5,7 @@ import os
 import json
 from shutil import copyfile
 
-from layer_painter import utils, constants
+from .. import utils, constants
 
     
 class LP_AssetImportProps(bpy.types.PropertyGroup):

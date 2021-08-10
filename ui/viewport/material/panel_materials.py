@@ -1,6 +1,6 @@
 import bpy
 
-from layer_painter.ui import utils_ui
+from ....ui import utils_ui
 
 
 class LP_PT_MaterialPanel(bpy.types.Panel):

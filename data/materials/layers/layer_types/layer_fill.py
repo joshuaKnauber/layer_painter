@@ -1,5 +1,5 @@
-from layer_painter import constants
-from layer_painter.data import utils_nodes
+from ..... import constants
+from .....data import utils_nodes
 
 
 def setup_channel_nodes(layer, channel, endpoints):

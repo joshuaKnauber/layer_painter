@@ -2,8 +2,8 @@ import bpy
 
 import json
 
-from layer_painter.data.assets.asset import LP_AssetProperties
-from layer_painter import constants
+from ..data.assets.asset import LP_AssetProperties
+from . import constants
 
 
 class LP_AddonProperties(bpy.types.PropertyGroup):
