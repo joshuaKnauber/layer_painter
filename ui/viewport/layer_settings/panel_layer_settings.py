@@ -78,6 +78,9 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        op = layout.operator("lp.add_mask")
-        op.group_name = "Noise"
-        op.file_uid = "0be674aaa2"
+        # TESTING PURPOSES ONLY
+        layout.label(text="WIP - DEBUG ONLY!", icon="ERROR")
+        for mask in bpy.context.scene.lp.mask_assets:
+            op = layout.operator("lp.add_mask", text=mask.name)
+            op.group_name = mask.name
+            op.file_name = mask.blend_file

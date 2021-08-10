@@ -14,7 +14,7 @@ class LP_OT_AddMask(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
     
     group_name: bpy.props.StringProperty(options={"HIDDEN"})
-    file_uid: bpy.props.StringProperty(options={"HIDDEN"})
+    file_name: bpy.props.StringProperty(options={"HIDDEN"})
 
     @classmethod
     def poll(cls, context):
@@ -22,5 +22,5 @@ class LP_OT_AddMask(bpy.types.Operator):
         return utils_operator.base_poll(context) and mat.lp.selected
 
     def execute(self, context):
-        group = utils_import.get_group(os.path.join(constants.ASSET_LOC, self.file_uid+".blend"), self.group_name)
+        group = utils_import.get_group(os.path.join(constants.ASSET_LOC, self.file_name), self.group_name)
         return {"FINISHED"}
