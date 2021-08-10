@@ -1,4 +1,4 @@
 __pycache__/
 *.pyc
 *.blend1
-assets/files/*
+assets/files/*.blend
