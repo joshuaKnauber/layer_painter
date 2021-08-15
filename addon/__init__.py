@@ -1,5 +1,4 @@
 import bpy
-from .. import constants
 from . import preferences, properties
 
 
@@ -22,4 +21,4 @@ def unregister():
 
 def prefs():
     """ returns the addon preferences """
-    return bpy.context.preferences.addons[constants.MODULE].preferences
+    return bpy.context.preferences.addons[__name__.partition('.')[0]].preferences
