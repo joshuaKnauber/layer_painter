@@ -9,8 +9,8 @@ from .operators.assets import load_assets
 
 
 def set_material_uids():
-    # TODO by @Joshua: Need to change the material uid on duplicated materials
-    #       Is a bigger issue because layers and channels store references to their material by this uid
+    # TODO (noted by Joshua) Need to change the material uid on duplicated materials
+    # Is a bigger issue because layers and channels store references to their material by this uid
     for mat in bpy.data.materials:
         if not mat.lp.uid:
             mat.lp.uid = make_uid()

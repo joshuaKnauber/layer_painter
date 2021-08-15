@@ -2,6 +2,7 @@ import bpy
 
 from ..operators import utils_operator
 from .. import utils
+from ..data import utils_nodes
 from ..data.materials.layers.layer_types import layer_fill
 
 
@@ -21,6 +22,11 @@ class LP_OT_AddFillLayer(bpy.types.Operator):
 
     def execute(self, context):
         bpy.data.materials[self.material].lp.add_fill_layer()
+        
+        # NOTE (Joshua) currenly only used for debugging
+        ntree = bpy.data.materials[self.material].lp.selected.node.node_tree
+        utils_nodes.organize_tree(ntree, ntree.nodes["OUTPUTS"])
+
         utils.redraw()
         return {"FINISHED"}
 
