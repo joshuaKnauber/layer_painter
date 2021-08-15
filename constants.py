@@ -1,10 +1,6 @@
 import os
 
 
-# the name of the module this addon lives in
-MODULE = "layer_painter"
-
-
 # id names of different nodes for cleaner notation
 NODES = {
     "TEX":      "ShaderNodeTexImage",

@@ -1,10 +1,9 @@
 import bpy
-from .. import constants
 
 
 class LP_AddonPreferences(bpy.types.AddonPreferences):
 
-    bl_idname = constants.MODULE
+    bl_idname = __name__.partition('.')[0]
 
     # navigation enum for the addon preferences
     pref_nav: bpy.props.EnumProperty(name="Navigation",

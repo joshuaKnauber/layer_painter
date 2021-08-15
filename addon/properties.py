@@ -3,7 +3,7 @@ import bpy
 import json
 
 from ..data.assets.asset import LP_AssetProperties
-from . import constants
+from .. import constants
 
 
 class LP_AddonProperties(bpy.types.PropertyGroup):
