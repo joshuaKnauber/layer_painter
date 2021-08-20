@@ -135,7 +135,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
         # reconnect layer below
         if below and below.node:
-            below.connect_channel_outputs()
+            layer_channels.connect_channel_outputs(below)
 
         self.update_preview()
         
