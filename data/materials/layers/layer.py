@@ -249,3 +249,15 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                                        default=0,
                                        min=0, max=1,
                                        update=update_texture_mapping)
+
+
+    ### masks
+    def add_mask(self, mask_data):
+        """ gets the mask data properties and adds this mask to the top of the stack """
+        print(mask_data.name)
+
+
+    ### filters
+    def add_filter(self, filter_data):
+        """ gets the filter data properties and adds this filter to the top of the stack """
+        print(filter_data.name)

@@ -78,9 +78,11 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        # TESTING PURPOSES ONLY
         layout.label(text="WIP - DEBUG ONLY!", icon="ERROR")
-        for mask in bpy.context.scene.lp.mask_assets:
-            op = layout.operator("lp.add_mask", text=mask.name)
-            op.group_name = mask.name
-            op.file_name = mask.blend_file
+
+        layout.prop(mat.lp, "channel", text="")
+
+        # draw mask selection
+        layout.prop(bpy.context.scene.lp, "masks", text="")
+
+        # draw mask stack

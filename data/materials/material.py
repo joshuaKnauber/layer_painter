@@ -47,6 +47,19 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
     channels: bpy.props.CollectionProperty(type=LP_ChannelProperties)
 
 
+    ### channel dropdown
+    def channel_items(self, context):
+        "returns the channels of this material as a list of enum items including the layer channel"
+        items = [("LAYER", "Layer", "The entire layer, including all channels")]
+        for channel in self.channels:
+            items.append( (channel.uid, channel.name, channel.inp.name) )
+        return items
+
+    channel: bpy.props.EnumProperty(name="Channel",
+                                    description="Select the channel that should be affected",
+                                    items=channel_items)
+
+
     ### methods to get layers
     def layer_index(self, layer):
         """ returns the index of the given layer """
