@@ -90,7 +90,8 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
             # draw mask header
             row = box.row()
-            row.prop(group, "hide", text=group.name, icon="TRIA_RIGHT" if group.hide else "TRIA_DOWN", emboss=False)
+            row.prop(group, "hide", text="", icon="TRIA_RIGHT" if group.hide else "TRIA_DOWN", emboss=False)
+            row.prop(group, "label", text="")
 
             # draw group inputs
             if not group.hide:

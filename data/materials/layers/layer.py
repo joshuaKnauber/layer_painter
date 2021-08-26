@@ -303,9 +303,9 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
     ### masks
     def __add_asset_group_node(self, asset_data):
-        group = utils_import.get_group(os.path.join(constants.ASSET_LOC, asset_data.blend_file), asset_data.name)
         node = self.node.node_tree.nodes.new(constants.NODES["GROUP"])
-        node.node_tree = group
+        node.node_tree = utils_import.get_hidden_group_copy(os.path.join(constants.ASSET_LOC, asset_data.blend_file), asset_data.name)
+        node.label = asset_data.name
         return node
 
     def add_mask(self, mask_data):
