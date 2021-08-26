@@ -2,7 +2,6 @@ import bpy
 
 from .... import utils
 from ....ui import utils_ui
-from ....data.materials.layers.layer_types import layer_fill
 from . import fill_settings
 
 
@@ -86,3 +85,13 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
         layout.prop(bpy.context.scene.lp, "masks", text="")
 
         # draw mask stack
+        for group in layer.get_mask_nodes(mat.lp.channel):
+            box = layout.box()
+
+            # draw mask header
+            row = box.row()
+            row.prop(group, "hide", text=group.name, icon="TRIA_RIGHT" if group.hide else "TRIA_DOWN", emboss=False)
+
+            # draw group inputs
+            if not group.hide:
+                utils_ui.draw_lp_group(box, group)

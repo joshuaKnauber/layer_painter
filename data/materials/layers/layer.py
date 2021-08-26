@@ -133,6 +133,43 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                 return layer_fill.get_channel_mask_socket(self, channel)
             elif self.layer_type == "PAINT":
                 pass # TODO for paint layer
+
+    def __get_socket_mask_nodes(self, input):
+        """ returns all masks connected to a given linked socket """
+        nodes = []
+        mask = input.links[0].from_node
+        while mask.inputs[0].is_linked:
+            nodes.append(mask)
+            mask = mask.inputs[0].links[0].from_node
+        nodes.append(mask)
+        return nodes
+
+    def __get_layer_mask_nodes(self):
+        """ returns a list of nodes for the layers mask nodes """
+        nodes = []
+        socket = self.node.node_tree.nodes[constants.OPAC_NAME].inputs[2]
+        if socket.is_linked:
+            nodes = self.__get_socket_mask_nodes(socket)
+        return nodes
+
+    def __get_channel_mask_nodes(self, channel_uid):
+        """ returns a list of nodes for the channels mask nodes """
+        nodes = []
+        if self.layer_type == "FILL":
+            socket = layer_fill.get_channel_mask_socket(self, channel_uid)
+            if socket.is_linked:
+                nodes = self.__get_socket_mask_nodes(socket)
+        elif self.layer_type == "PAINT":
+            pass # TODO
+        return nodes
+
+    def get_mask_nodes(self, channel):
+        """ returns a list of nodes which match the masks added to the given channel uid or 'LAYER' """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if channel == "LAYER":
+            return self.__get_layer_mask_nodes()
+        else:
+            return self.__get_channel_mask_nodes(channel)
     
     
     ### update appearance
