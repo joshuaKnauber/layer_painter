@@ -85,14 +85,15 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
         layout.prop(bpy.context.scene.lp, "masks", text="")
 
         # draw mask stack
-        for group in layer.get_mask_nodes(mat.lp.channel):
+        for group_node in layer.get_mask_nodes(mat.lp.channel):
             box = layout.box()
 
             # draw mask header
             row = box.row()
-            row.prop(group, "hide", text="", icon="TRIA_RIGHT" if group.hide else "TRIA_DOWN", emboss=False)
-            row.prop(group, "label", text="")
+            row.prop(group_node, "hide", text="", icon="TRIA_RIGHT" if group_node.hide else "TRIA_DOWN", emboss=False)
+            row.prop(group_node, "label", text="")
+            row.operator("lp.remove_mask", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
 
             # draw group inputs
-            if not group.hide:
-                utils_ui.draw_lp_group(box, group)
+            if not group_node.hide:
+                utils_ui.draw_lp_group(box, group_node)

@@ -321,6 +321,21 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             self.node.node_tree.links.new(to_socket.links[0].from_socket, node.inputs[0])
         self.node.node_tree.links.new(node.outputs[0], to_socket)
 
+    def remove_mask(self, mask_node):
+        """ removes the given mask node and its group """
+        group = mask_node.node_tree
+        
+        from_socket = None
+        if mask_node.inputs[0].is_linked:
+            from_socket = mask_node.inputs[0].links[0].from_socket
+        to_socket = mask_node.outputs[0].links[0].to_socket
+
+        self.node.node_tree.nodes.remove(mask_node)
+        if group.users == 0:
+            bpy.data.node_groups.remove(group)
+
+        if from_socket and to_socket:
+            self.node.node_tree.links.new(from_socket, to_socket)
 
     ### filters
     def add_filter(self, filter_data):
