@@ -25,7 +25,7 @@ def make_group(ntree, name):
     group_outputs.name = constants.OUTPUT_NAME
     group_outputs.location = (300, 0)
 
-    node = ntree.nodes.new("ShaderNodeGroup")
+    node = ntree.nodes.new(constants.NODES["GROUP"])
     node.node_tree = ngroup
     node.name = name
     node.label = name

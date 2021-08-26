@@ -15,6 +15,7 @@ NODES = {
     "DISP":     "ShaderNodeDisplacement",
     "FRAME":    "NodeFrame",
     "EMIT":     "ShaderNodeEmission",
+    "GROUP":    "ShaderNodeGroup",
 }
 
 

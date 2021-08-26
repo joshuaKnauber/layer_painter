@@ -1,6 +1,8 @@
 import bpy
+import os
 
 from .... import utils, constants
+from ....assets import utils_import
 from . import layer_setup, layer_channels
 from .layer_types import layer_fill
 
@@ -120,6 +122,17 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ returns this layers opacity node socket """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         return self.node.node_tree.nodes[constants.OPAC_NAME].inputs[0]
+
+    def get_mask_input(self, channel):
+        """ returns the input for the given channel uid or 'LAYER' """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if channel == "LAYER":
+            return self.node.node_tree.nodes[constants.OPAC_NAME].inputs[2]
+        else:
+            if self.layer_type == "FILL":
+                return layer_fill.get_channel_mask_socket(self, channel)
+            elif self.layer_type == "PAINT":
+                pass # TODO for paint layer
     
     
     ### update appearance
@@ -252,9 +265,24 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
 
     ### masks
+    def __add_asset_group_node(self, asset_data):
+        group = utils_import.get_group(os.path.join(constants.ASSET_LOC, asset_data.blend_file), asset_data.name)
+        node = self.node.node_tree.nodes.new(constants.NODES["GROUP"])
+        node.node_tree = group
+        return node
+
     def add_mask(self, mask_data):
         """ gets the mask data properties and adds this mask to the top of the stack """
-        print(mask_data.name)
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+
+        # add mask node
+        node = self.__add_asset_group_node(mask_data)
+        to_socket = self.get_mask_input(utils.active_material(bpy.context).lp.channel)
+
+        # link mask node
+        if to_socket.is_linked:
+            self.node.node_tree.links.new(to_socket.links[0].from_socket, node.inputs[0])
+        self.node.node_tree.links.new(node.outputs[0], to_socket)
 
 
     ### filters

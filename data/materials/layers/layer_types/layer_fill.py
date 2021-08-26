@@ -39,10 +39,16 @@ def get_channel_tex_alpha_socket(layer, channel_uid):
     return get_channel_mix_node(layer, channel_uid).inputs[0].links[0].from_node.inputs[0]
 
 
+def get_channel_mask_socket(layer, channel_uid):
+    """ returns the mask nodes socket for the given channel uid """
+    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return get_channel_tex_alpha_socket(layer, channel_uid).node.inputs[2].links[0].from_node.inputs[2]
+
+
 def get_channel_opacity_socket(layer, channel_uid):
     """ returns the opacity nodes socket for the given channel uid """
     if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_tex_alpha_socket(layer, channel_uid).node.inputs[2].links[0].from_node.inputs[0]
+    return get_channel_mask_socket(layer, channel_uid).node.inputs[0].links[0].from_node.inputs[0]
 
 
 def get_channel_value_node(layer, channel_uid):
