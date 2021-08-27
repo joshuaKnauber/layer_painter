@@ -11,6 +11,10 @@ class LP_AssetProperties(bpy.types.PropertyGroup):
                                        description="Type of the asset",
                                        items=[("MASK","Mask","Mask"),
                                               ("FILTER","Filter","Filter")])
+
+    thumbnail: bpy.props.StringProperty(name="Thumbnail",
+                                    description="Thumbnail for this asset",
+                                    subtype="FILE_PATH")
     
     
     

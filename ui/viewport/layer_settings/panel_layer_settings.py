@@ -77,12 +77,12 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        layout.label(text="WIP - DEBUG ONLY!", icon="ERROR")
-
         layout.prop(mat.lp, "channel", text="")
 
-        # draw mask selection
-        layout.prop(bpy.context.scene.lp, "masks", text="")
+        # draw mask add
+        row = layout.row()
+        row.scale_y = 1.2
+        row.operator("lp.add_mask", icon="ADD")
 
         # draw mask stack
         for group_node in layer.get_mask_nodes(mat.lp.channel):

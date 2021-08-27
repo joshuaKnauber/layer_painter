@@ -1,4 +1,5 @@
 import bpy
+import os
 
 
 class LP_AddonPreferences(bpy.types.AddonPreferences):
@@ -10,24 +11,33 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
                                      items=[("SETTINGS", "Settings", "Settings", "PREFERENCES", 0),
                                             ("ASSETS", "Assets", "Assets", "ASSET_MANAGER", 1)])
 
-    def draw_asset_group(self, layout, asset_type, names, uid):
+    def draw_asset_group(self, layout, asset_type, items, uid):
         col = layout.column(align=True)
         row = col.row()
         row.enabled = False
         row.label(text=asset_type.title()+":")
         
-        if len(names) == 0:
+        if len(items) == 0:
             col.label(text="-")
         
         # draw all assets from the given list
-        for name in names:
+        for item in items:
             _box = col.box()
             row = _box.row()
-            row.scale_y = 0.75
-            row.label(text=name)
+            split = row.split(factor=0.6)
+            row = split.row()
+            row.scale_y = 0.9
+            row.label(text=item["name"])
+
+            row = split.row()
+            op = row.operator("lp.load_thumbnail", text=os.path.basename(item['thumbnail']) if item["thumbnail"] else "(No Thumbnail)", emboss=False, icon="FILE_FOLDER")
+            op.uid = uid
+            op.name = item["name"]
+            op.asset_type = asset_type
+
             op = row.operator("lp.remove_asset", text="", emboss=False, icon="PANEL_CLOSE")
             op.uid = uid
-            op.name = name
+            op.name = item["name"]
             op.asset_type = asset_type
 
     def draw_assets(self, context, layout):
@@ -42,6 +52,8 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
             box = layout.box()
             row = box.row()
             row.label(text=asset_file["file_name"])
+            op = row.operator("lp.load_thumbnails", text="", emboss=False, icon="FILE_FOLDER")
+            op.uid = asset_file["uid"]
             op = row.operator("lp.remove_asset_file", text="", emboss=False, icon="TRASH")
             op.uid = asset_file["uid"]
 

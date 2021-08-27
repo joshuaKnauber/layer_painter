@@ -1,5 +1,6 @@
 import bpy
 from bpy_extras.io_utils import ImportHelper
+import bpy.utils.previews
 
 import os
 import json
@@ -62,10 +63,14 @@ class LP_OT_ProcessFile(bpy.types.Operator):
         col = layout.column(align=True)
         for group in self.groups:
             box = col.box()
-            row = box.row()
+            subcol = box.column(align=True)
+            row = subcol.row()
             row.prop(group, "use_group", text="")
-            row.label(text=group.name)
-            row.prop(group, "asset_type", text="")
+
+            subrow = row.row()
+            subrow.enabled = group.use_group
+            subrow.label(text=group.name)
+            subrow.prop(group, "asset_type", text="")
 
     def invoke(self, context, event):
         # load all group names from selected file
@@ -84,9 +89,9 @@ class LP_OT_ProcessFile(bpy.types.Operator):
             if group.use_group:
                 
                 if group.asset_type == "MASK":
-                    file_data["masks"].append(group.name)
+                    file_data["masks"].append( {"name": group.name, "thumbnail": ""} )
                 elif group.asset_type == "FILTER":
-                    file_data["filters"].append(group.name)
+                    file_data["filters"].append( {"name": group.name, "thumbnail": ""} )
                     
         return file_data
     
@@ -113,11 +118,29 @@ class LP_OT_ProcessFile(bpy.types.Operator):
             self.add_data_to_json(file_data)
             
         load_assets(context)
+        utils.redraw()
         return {"FINISHED"}
+
+
+preview_collections = {}
+
+
+def get_pcoll(coll_type):
+    """ returns the preview collection with the given name """
+    return preview_collections[coll_type]
+
+
+def remove_pcolls():
+    """ removes all preview collections """
+    for pcoll in preview_collections.values():
+        bpy.utils.previews.remove(pcoll)
+    preview_collections.clear()
     
     
-def __assign_asset_data(item, name, asset_type, blend_file):
-    item.name = name
+def __assign_asset_data(item, element, asset_type, blend_file):
+    """ assigns the given asset info to the given item """
+    item.name = element["name"]
+    item.thumbnail = element["thumbnail"]
     item.asset_type = asset_type
     item.blend_file = blend_file
     
@@ -126,18 +149,37 @@ def load_assets(context):
     """ loads all available assets from the asset file into the property groups """
     context.scene.lp.mask_assets.clear()
     context.scene.lp.filter_assets.clear()
+    remove_pcolls()
+
+    mask_pcoll = bpy.utils.previews.new()
+    mask_pcoll.load("NONE", os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
+    filter_pcoll = bpy.utils.previews.new()
+    filter_pcoll.load("NONE", os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
 
     with open(constants.ASSET_FILE, "r") as asset_data:
         data = json.loads(asset_data.read())
         for asset_file in data["files"]:
 
-            for name in asset_file["masks"]:
+            for element in asset_file["masks"]:
                 mask = context.scene.lp.mask_assets.add()
-                __assign_asset_data(mask, name, "MASK", f"{asset_file['uid']}.blend")
+                __assign_asset_data(mask, element, "MASK", f"{asset_file['uid']}.blend")
+
+                if element["thumbnail"] and os.path.exists(element["thumbnail"]):
+                    mask_pcoll.load(element["name"], element["thumbnail"], 'IMAGE')
+                else:
+                    mask_pcoll.load(element["name"], os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
             
-            for name in asset_file["filters"]:
+            for element in asset_file["filters"]:
                 filter = context.scene.lp.filter_assets.add()
-                __assign_asset_data(filter, name, "FILTER", f"{asset_file['uid']}.blend")
+                __assign_asset_data(filter, element, "FILTER", f"{asset_file['uid']}.blend")
+
+                if element["thumbnail"] and os.path.exists(element["thumbnail"]):
+                    filter_pcoll.load(element["name"], element["thumbnail"], 'IMAGE')
+                else:
+                    filter_pcoll.load(element["name"], os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
+
+    preview_collections[constants.PCOLL_MASK] = mask_pcoll
+    preview_collections[constants.PCOLL_FILTER] = filter_pcoll
     
     
 class LP_OT_ReloadAssets(bpy.types.Operator):
@@ -200,7 +242,12 @@ class LP_OT_RemoveAsset(bpy.types.Operator):
         # remove name from uid file in asset list
         with open(constants.ASSET_FILE, "r+") as asset_file:
             data = json.loads(asset_file.read())
-            data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type].remove(self.name)
+
+            for i, item in enumerate( data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type] ):
+                if item["name"] == self.name:
+                    data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type].pop(i)
+                    break
+
             asset_file.seek(0)
             asset_file.write(json.dumps(data, indent=4))
             asset_file.truncate()
@@ -210,3 +257,66 @@ class LP_OT_RemoveAsset(bpy.types.Operator):
 
     def invoke(self, context, event):
         return context.window_manager.invoke_confirm(self, event)
+
+
+class LP_OT_LoadThumbnail(bpy.types.Operator, ImportHelper):
+    bl_idname = "lp.load_thumbnail"
+    bl_label = "Load Thumbnail"
+    bl_description = "Loads the thumbnail for this asset"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    uid: bpy.props.StringProperty(options={"HIDDEN"})
+    name: bpy.props.StringProperty(options={"HIDDEN"})
+    asset_type: bpy.props.StringProperty(options={"HIDDEN"})
+    
+    def execute(self, context):
+        # load thumbnail
+        if self.filepath.split(".")[-1] in ["jpg","jpeg","png"]:
+
+            with open(constants.ASSET_FILE, "r+") as asset_file:
+                data = json.loads(asset_file.read())
+
+                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type]:
+                    if item["name"] == self.name:
+                        item["thumbnail"] = bpy.path.abspath(self.filepath)
+                        break
+
+                asset_file.seek(0)
+                asset_file.write(json.dumps(data, indent=4))
+                asset_file.truncate()
+
+        load_assets(context)
+        return {"FINISHED"}
+
+
+class LP_OT_LoadThumbnails(bpy.types.Operator, ImportHelper):
+    bl_idname = "lp.load_thumbnails"
+    bl_label = "Load Thumbnails"
+    bl_description = "Loads the thumbnails for this asset file"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+
+    uid: bpy.props.StringProperty(options={"HIDDEN"})
+    
+    def execute(self, context):
+        # load thumbnails
+        directory = os.path.dirname(self.filepath)
+        files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+        
+        with open(constants.ASSET_FILE, "r+") as asset_file:
+            data = json.loads(asset_file.read())
+
+            for name in files:
+                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ]["masks"]:
+                    if name.split(".")[0] == item["name"] and name.split(".")[-1] in ["jpg","jpeg","png"]:
+                        item["thumbnail"] = os.path.join(directory, name)
+
+                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ]["filters"]:
+                    if name.split(".")[0] == item["name"] and name.split(".")[-1] in ["jpg","jpeg","png"]:
+                        item["thumbnail"] = os.path.join(directory, name)
+
+            asset_file.seek(0)
+            asset_file.write(json.dumps(data, indent=4))
+            asset_file.truncate()
+
+        load_assets(context)
+        return {"FINISHED"}

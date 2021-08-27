@@ -2,6 +2,7 @@ import bpy
 
 import json
 
+from ..operators.assets import get_pcoll
 from ..data.assets.asset import LP_AssetProperties
 from .. import constants, utils
 
@@ -37,45 +38,29 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
 
 
     def __asset_items(self, name, property, offset=0):
-        items = [("NONE", f"-- Select a {name} --", f"Select a {name} to add it to the stack"), (None)]
+        pcoll = get_pcoll(constants.PCOLL_MASK) if name=="mask" else get_pcoll(constants.PCOLL_FILTER)
+
+        items = []
         for i, asset in enumerate(getattr(self, property)):
-            items.append( (str(i + offset), asset.name, asset.name) )
+            items.append( (str(i + offset), asset.name, asset.name, pcoll[asset.name].icon_id, i+offset) )
         return items
 
     def mask_items(self, context):
         """ returns the mask assets as a list of enum items """
         masks = self.__asset_items("mask", "mask_assets")
-        filters = self.__asset_items("mask filter", "filter_assets", len(masks)-1)
-        return masks + [("", "", "", 0)] + filters
+        filters = self.__asset_items("mask filter", "filter_assets", len(masks)+1)
+        return masks + filters
 
     def filter_items(self, context):
         """ returns the filter assets as a list of enum items """
         return self.__asset_items("filter", "filter_assets")
 
-    def select_mask(self, context):
-        """ called when a mask is selected to reset it and add the mask """
-        if self.masks.isdigit():
-            index = int(self.masks)
-            if index < len(self.mask_assets):
-                utils.active_material(context).lp.selected.add_mask( self.mask_assets[index], True )
-            else:
-                utils.active_material(context).lp.selected.add_mask( self.filter_assets[index - len(self.mask_assets) - 1], False )
-        self["masks"] = 0
-
-    def select_filter(self, context):
-        """ called when a filter is selected to reset it and add the filter """
-        if self.filters.isdigit():
-            utils.active_material(context).lp.selected.add_filter( self.filter_assets[int(self.filters)] )
-        self["filters"] = 0
-
     # an enum of the mask assets to select for adding
     masks: bpy.props.EnumProperty(name="Masks",
                                 description="Select one of these masks to add it to the stack",
-                                items=mask_items,
-                                update=select_mask)
+                                items=mask_items)
 
     # an enum of the filter assets to select for adding
     filters: bpy.props.EnumProperty(name="Filters",
                                 description="Select one of these filters to add it to the stack",
-                                items=filter_items,
-                                update=select_filter)
+                                items=filter_items)

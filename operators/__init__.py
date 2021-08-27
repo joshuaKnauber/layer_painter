@@ -21,6 +21,9 @@ classes = (
     assets.LP_OT_ReloadAssets,
     assets.LP_OT_RemoveAsset,
     assets.LP_OT_RemoveAssetFile,
+    assets.LP_OT_LoadThumbnail,
+    assets.LP_OT_LoadThumbnails,
+    masks.LP_OT_AddMask,
     masks.LP_OT_RemoveMask,
     masks.LP_OT_MoveMask,
 )
@@ -33,3 +36,4 @@ def register():
 
 def unregister():
     unreg_classes()
+    assets.remove_pcolls()
