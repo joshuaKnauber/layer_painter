@@ -14,7 +14,7 @@ def draw_lp_group(layout, group_node, inp_offset = 1):
             layout.prop(inp, "default_value", text=inp.name)
 
     for node in group_node.node_tree.nodes:
-        if node.bl_idname == constants.NODES["RAMP"]:
+        if node.bl_idname == constants.NODES["RAMP"] and not node.hide:
             layout.template_color_ramp(node, "color_ramp", expand=False)
-        elif node.bl_idname == constants.NODES["CURVES"]:
+        elif node.bl_idname == constants.NODES["CURVES"] and not node.hide:
             layout.template_curve_mapping(node, "mapping", type='COLOR')
