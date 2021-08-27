@@ -276,7 +276,7 @@ class LP_OT_LoadThumbnail(bpy.types.Operator, ImportHelper):
             with open(constants.ASSET_FILE, "r+") as asset_file:
                 data = json.loads(asset_file.read())
 
-                for i, item in enumerate( data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type] ):
+                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type]:
                     if item["name"] == self.name:
                         item["thumbnail"] = bpy.path.abspath(self.filepath)
                         break

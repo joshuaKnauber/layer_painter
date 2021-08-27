@@ -77,8 +77,6 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        layout.label(text="WIP - DEBUG ONLY!", icon="ERROR")
-
         layout.prop(mat.lp, "channel", text="")
 
         # draw mask add

@@ -1,28 +1,3 @@
 {
-    "files": [
-        {
-            "file_name": "assets.blend",
-            "uid": "2bd67726f7",
-            "masks": [
-                {
-                    "name": "Noise",
-                    "thumbnail": "C:\\Users\\joshu\\Desktop\\Noise.png"
-                },
-                {
-                    "name": "Checker",
-                    "thumbnail": "C:\\Users\\joshu\\Desktop\\Checker.png"
-                }
-            ],
-            "filters": [
-                {
-                    "name": "Curves",
-                    "thumbnail": "C:\\Users\\joshu\\Desktop\\Curves.png"
-                },
-                {
-                    "name": "Color Ramp",
-                    "thumbnail": "C:\\Users\\joshu\\Desktop\\Color Ramp.png"
-                }
-            ]
-        }
-    ]
+    "files": []
 }
