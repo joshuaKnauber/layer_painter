@@ -22,6 +22,7 @@ classes = (
     assets.LP_OT_RemoveAsset,
     assets.LP_OT_RemoveAssetFile,
     masks.LP_OT_RemoveMask,
+    masks.LP_OT_MoveMask,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 

@@ -160,12 +160,13 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             if socket.is_linked:
                 nodes = self.__get_socket_mask_nodes(socket)
         elif self.layer_type == "PAINT":
-            pass # TODO
+            pass # TODO for paint layer
         return nodes
 
     def get_mask_nodes(self, channel):
         """ returns a list of nodes which match the masks added to the given channel uid or 'LAYER' """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        # TODO (noted by Joshua) cache these in some form. Called a lot in the mask ui right now. Should be fairly fast but could be optimized
         if channel == "LAYER":
             return self.__get_layer_mask_nodes()
         else:
@@ -301,13 +302,74 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                                        update=update_texture_mapping)
 
 
-    ### masks
+    ### assets
     def __add_asset_group_node(self, asset_data):
         node = self.node.node_tree.nodes.new(constants.NODES["GROUP"])
         node.node_tree = utils_import.get_hidden_group_copy(os.path.join(constants.ASSET_LOC, asset_data.blend_file), asset_data.name)
         node.label = asset_data.name
         return node
 
+    def __remove_asset_node(self, node):
+        """ removes the given asset node from the tree as well as its group """
+        group = node.node_tree
+        
+        from_socket = None
+        if node.inputs[0].is_linked:
+            from_socket = node.inputs[0].links[0].from_socket
+        to_socket = node.outputs[0].links[0].to_socket
+
+        self.node.node_tree.nodes.remove(node)
+        if group.users == 0:
+            bpy.data.node_groups.remove(group)
+
+        if from_socket and to_socket:
+            self.node.node_tree.links.new(from_socket, to_socket)
+
+    def __move_asset_node_up(self, node):
+        """ moves the given asset node up (make sure that not top asset before this!!!) """
+        above = node.outputs[0].links[0].to_node
+        to_socket = above.outputs[0].links[0].to_socket
+
+        self.node.node_tree.links.remove(above.outputs[0].links[0])
+        self.node.node_tree.links.remove(node.outputs[0].links[0])
+
+        from_socket = None
+        if node.inputs[0].is_linked:
+            from_socket = node.inputs[0].links[0].from_socket
+            self.node.node_tree.links.remove(from_socket.links[0])
+
+        self.node.node_tree.links.new(node.outputs[0], to_socket)
+        self.node.node_tree.links.new(above.outputs[0], node.inputs[0])
+        if from_socket:
+            self.node.node_tree.links.new(from_socket, above.inputs[0])
+
+    def __move_asset_node_down(self, node):
+        """ moves the given asset node down (make sure that not bottom asset before this!!!) """
+        below = node.inputs[0].links[0].from_node
+        to_socket = node.outputs[0].links[0].to_socket
+
+        self.node.node_tree.links.remove(node.outputs[0].links[0])
+        self.node.node_tree.links.remove(node.inputs[0].links[0])
+
+        from_socket = None
+        if below.inputs[0].is_linked:
+            from_socket = below.inputs[0].links[0].from_socket
+            self.node.node_tree.links.remove(below.inputs[0].links[0])
+
+        self.node.node_tree.links.new(below.outputs[0], to_socket)
+        self.node.node_tree.links.new(node.outputs[0], below.inputs[0])
+        if from_socket:
+            self.node.node_tree.links.new(from_socket, node.inputs[0])
+
+    def __move_asset_node(self, node, move_up):
+        """ moves the given asset node up or down """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if move_up:
+            self.__move_asset_node_up(node)
+        else:
+            self.__move_asset_node_down(node)
+
+    ### masks
     def add_mask(self, mask_data):
         """ gets the mask data properties and adds this mask to the top of the stack """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
@@ -323,21 +385,38 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
     def remove_mask(self, mask_node):
         """ removes the given mask node and its group """
-        group = mask_node.node_tree
-        
-        from_socket = None
-        if mask_node.inputs[0].is_linked:
-            from_socket = mask_node.inputs[0].links[0].from_socket
-        to_socket = mask_node.outputs[0].links[0].to_socket
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.__remove_asset_node(mask_node)
+        self.get_layer_opacity_socket().default_value = self.get_layer_opacity_socket().default_value # trigger viewport update to reflect removed mask
 
-        self.node.node_tree.nodes.remove(mask_node)
-        if group.users == 0:
-            bpy.data.node_groups.remove(group)
+    def move_mask(self, mask_node, move_up):
+        """ moves the given mask group up or down """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.__move_asset_node(mask_node, move_up)
 
-        if from_socket and to_socket:
-            self.node.node_tree.links.new(from_socket, to_socket)
+    def is_group_top_mask(self, mask_group, channel):
+        """ returns if the given group is the top mask or not """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        return mask_group == self.get_mask_nodes(channel)[0]
+
+    def is_group_bottom_mask(self, mask_group, channel):
+        """ returns if the given group is the top mask or not """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        return mask_group == self.get_mask_nodes(channel)[-1]
+
 
     ### filters
     def add_filter(self, filter_data):
         """ gets the filter data properties and adds this filter to the top of the stack """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         print(filter_data.name)
+
+    def remove_filter(self, filter_node):
+        """ removes the given filter node and its group """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.__remove_asset_node(filter_node)
+
+    def move_filter(self, filter_node, move_up):
+        """ moves the given filter group up or down """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.__move_asset_node(filter_node, move_up)

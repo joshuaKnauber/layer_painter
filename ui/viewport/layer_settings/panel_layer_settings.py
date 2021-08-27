@@ -90,8 +90,22 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
             # draw mask header
             row = box.row()
-            row.prop(group_node, "hide", text="", icon="TRIA_RIGHT" if group_node.hide else "TRIA_DOWN", emboss=False)
+            row.prop(group_node, "hide", text="", icon="DISCLOSURE_TRI_RIGHT" if group_node.hide else "DISCLOSURE_TRI_DOWN", emboss=False)
             row.prop(group_node, "label", text="")
+
+            subrow = row.row(align=True)
+            subcol = subrow.column(align=True)
+            subcol.enabled = not layer.is_group_top_mask(group_node, mat.lp.channel)
+            op = subcol.operator("lp.move_mask", text="", icon="TRIA_UP")
+            op.node_name = group_node.name
+            op.move_up = True
+
+            subcol = subrow.column(align=True)
+            subcol.enabled = not layer.is_group_bottom_mask(group_node, mat.lp.channel)
+            op = subcol.operator("lp.move_mask", text="", icon="TRIA_DOWN")
+            op.node_name = group_node.name
+            op.move_up = False
+
             row.operator("lp.remove_mask", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
 
             # draw group inputs
