@@ -278,7 +278,9 @@ class LP_OT_LoadThumbnail(bpy.types.Operator, ImportHelper):
 
                 for item in data["files"][ find_asset_file_index(data["files"], self.uid) ][self.asset_type]:
                     if item["name"] == self.name:
-                        item["thumbnail"] = bpy.path.abspath(self.filepath)
+                        dst = os.path.join(constants.IMG_LOC, os.path.basename(self.filepath))
+                        copyfile(bpy.path.abspath(self.filepath), dst)
+                        item["thumbnail"] = dst
                         break
 
                 asset_file.seek(0)
@@ -296,23 +298,27 @@ class LP_OT_LoadThumbnails(bpy.types.Operator, ImportHelper):
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
     uid: bpy.props.StringProperty(options={"HIDDEN"})
+
+    def load_imgs(self, asset_type, data, name, directory):
+        for item in data["files"][ find_asset_file_index(data["files"], self.uid) ][asset_type]:
+            if not item["thumbnail"]:
+                if name.split(".")[0] == item["name"] and name.split(".")[-1] in ["jpg","jpeg","png"]:
+                    img_path = os.path.join(directory, name)
+                    dst = os.path.join(constants.IMG_LOC, os.path.basename(img_path))
+                    copyfile(img_path, dst)
+                    item["thumbnail"] = dst
     
     def execute(self, context):
         # load thumbnails
-        directory = os.path.dirname(self.filepath)
+        directory = os.path.dirname(bpy.path.abspath(self.filepath))
         files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
         
         with open(constants.ASSET_FILE, "r+") as asset_file:
             data = json.loads(asset_file.read())
 
             for name in files:
-                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ]["masks"]:
-                    if name.split(".")[0] == item["name"] and name.split(".")[-1] in ["jpg","jpeg","png"]:
-                        item["thumbnail"] = os.path.join(directory, name)
-
-                for item in data["files"][ find_asset_file_index(data["files"], self.uid) ]["filters"]:
-                    if name.split(".")[0] == item["name"] and name.split(".")[-1] in ["jpg","jpeg","png"]:
-                        item["thumbnail"] = os.path.join(directory, name)
+                self.load_imgs("masks", data, name, directory)
+                self.load_imgs("filters", data, name, directory)
 
             asset_file.seek(0)
             asset_file.write(json.dumps(data, indent=4))

@@ -65,6 +65,9 @@ ASSET_FILE = os.path.join(os.path.dirname(__file__), "assets", "assets.json")
 # location of the lp icons
 ICON_LOC = os.path.join(os.path.dirname(__file__), "assets", "icons")
 
+# location of the lp asset images
+IMG_LOC = os.path.join(os.path.dirname(__file__), "assets", "files", "imgs")
+
 
 # pcoll name for masks
 PCOLL_MASK = "masks"
