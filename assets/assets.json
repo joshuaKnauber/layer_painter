@@ -1,14 +1,3 @@
 {
-    "files": [
-        {
-            "file_name": "assets.blend",
-            "uid": "136a061b95",
-            "masks": [
-                "Noise"
-            ],
-            "filters": [
-                "Color Ramp"
-            ]
-        }
-    ]
+    "files": []
 }
