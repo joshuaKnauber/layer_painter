@@ -1,5 +1,6 @@
 import bpy
 from bpy_extras.io_utils import ImportHelper
+import bpy.utils.previews
 
 import os
 import json
@@ -114,9 +115,25 @@ class LP_OT_ProcessFile(bpy.types.Operator):
             
         load_assets(context)
         return {"FINISHED"}
+
+
+preview_collections = {}
+
+
+def get_pcoll(coll_type):
+    """ returns the preview collection with the given name """
+    return preview_collections[coll_type]
+
+
+def remove_pcolls():
+    """ removes all preview collections """
+    for pcoll in preview_collections.values():
+        bpy.utils.previews.remove(pcoll)
+    preview_collections.clear()
     
     
 def __assign_asset_data(item, name, asset_type, blend_file):
+    """ assigns the given asset info to the given item """
     item.name = name
     item.asset_type = asset_type
     item.blend_file = blend_file
@@ -126,6 +143,12 @@ def load_assets(context):
     """ loads all available assets from the asset file into the property groups """
     context.scene.lp.mask_assets.clear()
     context.scene.lp.filter_assets.clear()
+    remove_pcolls()
+
+    mask_pcoll = bpy.utils.previews.new()
+    mask_pcoll.load("NONE", os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
+    filter_pcoll = bpy.utils.previews.new()
+    filter_pcoll.load("NONE", os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
 
     with open(constants.ASSET_FILE, "r") as asset_data:
         data = json.loads(asset_data.read())
@@ -134,10 +157,17 @@ def load_assets(context):
             for name in asset_file["masks"]:
                 mask = context.scene.lp.mask_assets.add()
                 __assign_asset_data(mask, name, "MASK", f"{asset_file['uid']}.blend")
+
+                mask_pcoll.load(name, os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
             
             for name in asset_file["filters"]:
                 filter = context.scene.lp.filter_assets.add()
                 __assign_asset_data(filter, name, "FILTER", f"{asset_file['uid']}.blend")
+
+                filter_pcoll.load(name, os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
+
+    preview_collections[constants.PCOLL_MASK] = mask_pcoll
+    preview_collections[constants.PCOLL_FILTER] = filter_pcoll
     
     
 class LP_OT_ReloadAssets(bpy.types.Operator):

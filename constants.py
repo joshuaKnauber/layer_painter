@@ -61,3 +61,13 @@ ASSET_LOC = os.path.join(os.path.dirname(__file__), "assets", "files")
 
 # location of the asset json file
 ASSET_FILE = os.path.join(os.path.dirname(__file__), "assets", "assets.json")
+
+# location of the lp icons
+ICON_LOC = os.path.join(os.path.dirname(__file__), "assets", "icons")
+
+
+# pcoll name for masks
+PCOLL_MASK = "masks"
+
+# pcoll name for filters
+PCOLL_FILTER = "filters"
