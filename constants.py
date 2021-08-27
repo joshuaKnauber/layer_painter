@@ -15,6 +15,11 @@ NODES = {
     "DISP":     "ShaderNodeDisplacement",
     "FRAME":    "NodeFrame",
     "EMIT":     "ShaderNodeEmission",
+    "RAMP":     "ShaderNodeValToRGB",
+    "CURVES":   "ShaderNodeRGBCurve",
+    "GROUP":    "ShaderNodeGroup",
+    "GROUP_IN": "NodeGroupInput",
+    "GROUP_OUT":"NodeGroupOutput",
 }
 
 
@@ -35,6 +40,10 @@ INPUT_NAME = "INPUTS"
 
 # name of the group output node inside a lp node group
 OUTPUT_NAME = "OUTPUTS"
+
+
+# name of the mix node inside a mask node group
+MIX_MASK = "MASK_MIX"
 
 
 # name of the preview output

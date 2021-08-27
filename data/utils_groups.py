@@ -17,15 +17,15 @@ def make_group(ntree, name):
     ngroup = bpy.data.node_groups.new(name, "ShaderNodeTree")
     ngroup.use_fake_user = True
 
-    group_inputs = ngroup.nodes.new('NodeGroupInput')
+    group_inputs = ngroup.nodes.new(constants.NODES["GROUP_IN"])
     group_inputs.location = (-350, 0)
     group_inputs.name = constants.INPUT_NAME
 
-    group_outputs = ngroup.nodes.new('NodeGroupOutput')
+    group_outputs = ngroup.nodes.new(constants.NODES["GROUP_OUT"])
     group_outputs.name = constants.OUTPUT_NAME
     group_outputs.location = (300, 0)
 
-    node = ntree.nodes.new("ShaderNodeGroup")
+    node = ntree.nodes.new(constants.NODES["GROUP"])
     node.node_tree = ngroup
     node.name = name
     node.label = name

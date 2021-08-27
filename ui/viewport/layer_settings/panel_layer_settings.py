@@ -1,8 +1,7 @@
 import bpy
 
-from .... import utils
+from .... import utils, constants
 from ....ui import utils_ui
-from ....data.materials.layers.layer_types import layer_fill
 from . import fill_settings
 
 
@@ -78,9 +77,46 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
-        # TESTING PURPOSES ONLY
         layout.label(text="WIP - DEBUG ONLY!", icon="ERROR")
-        for mask in bpy.context.scene.lp.mask_assets:
-            op = layout.operator("lp.add_mask", text=mask.name)
-            op.group_name = mask.name
-            op.file_name = mask.blend_file
+
+        layout.prop(mat.lp, "channel", text="")
+
+        # draw mask selection
+        layout.prop(bpy.context.scene.lp, "masks", text="")
+
+        # draw mask stack
+        for group_node in layer.get_mask_nodes(mat.lp.channel):
+            box = layout.box()
+
+            # draw mask header
+            row = box.row()
+            row.prop(group_node, "hide", text="", icon="DISCLOSURE_TRI_RIGHT" if group_node.hide else "DISCLOSURE_TRI_DOWN", emboss=False)
+            row.prop(group_node, "mute", text="", icon="HIDE_ON" if group_node.mute else "HIDE_OFF", emboss=False)
+            row.prop(group_node, "label", text="")
+
+            # draw mask blend options
+            if constants.MIX_MASK in group_node.node_tree.nodes:
+                subrow = row.row()
+                subrow.prop(group_node.node_tree.nodes[constants.MIX_MASK], "blend_type", text="", emboss=False)
+                subrow.prop(group_node.node_tree.nodes[constants.MIX_MASK].inputs[0], "default_value", text="")
+
+            # draw mask move options
+            subrow = row.row(align=True)
+            subcol = subrow.column(align=True)
+            subcol.enabled = not layer.is_group_top_mask(group_node, mat.lp.channel)
+            op = subcol.operator("lp.move_mask", text="", icon="TRIA_UP")
+            op.node_name = group_node.name
+            op.move_up = True
+
+            subcol = subrow.column(align=True)
+            subcol.enabled = not layer.is_group_bottom_mask(group_node, mat.lp.channel)
+            op = subcol.operator("lp.move_mask", text="", icon="TRIA_DOWN")
+            op.node_name = group_node.name
+            op.move_up = False
+
+            # draw mask remove
+            row.operator("lp.remove_mask", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
+
+            # draw group inputs
+            if not group_node.hide:
+                utils_ui.draw_lp_group(box, group_node)

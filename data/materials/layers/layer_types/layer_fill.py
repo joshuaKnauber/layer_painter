@@ -39,10 +39,16 @@ def get_channel_tex_alpha_socket(layer, channel_uid):
     return get_channel_mix_node(layer, channel_uid).inputs[0].links[0].from_node.inputs[0]
 
 
+def get_channel_mask_socket(layer, channel_uid):
+    """ returns the mask nodes socket for the given channel uid """
+    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return get_channel_tex_alpha_socket(layer, channel_uid).node.inputs[2].links[0].from_node.inputs[2]
+
+
 def get_channel_opacity_socket(layer, channel_uid):
     """ returns the opacity nodes socket for the given channel uid """
     if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_tex_alpha_socket(layer, channel_uid).node.inputs[2].links[0].from_node.inputs[0]
+    return get_channel_mask_socket(layer, channel_uid).node.inputs[0].links[0].from_node.inputs[0]
 
 
 def get_channel_value_node(layer, channel_uid):
@@ -118,6 +124,13 @@ def __add_channel_mix(layer, channel, endpoints):
 
 def __add_channel_opacity(layer, mix):
     """ adds the node controlling the opacity for the given channel node """
+    # add mask node
+    mask = layer.node.node_tree.nodes.new(constants.NODES["MIX"])
+    mask.label = "Channel Mask"
+    mask.inputs[0].default_value = 1
+    mask.inputs[1].default_value = (0, 0, 0, 1)
+    mask.inputs[2].default_value = (1, 1, 1, 1)
+
     # add opacity node
     opacity = layer.node.node_tree.nodes.new(constants.NODES["MIX"])
     opacity.label = "Channel Opacity"
@@ -133,7 +146,8 @@ def __add_channel_opacity(layer, mix):
     tex_alpha.inputs[2].default_value = (1, 1, 1, 1)
 
     # link opacity nodes
-    layer.node.node_tree.links.new(opacity.outputs[0], tex_alpha.inputs[2])
+    layer.node.node_tree.links.new(opacity.outputs[0], mask.inputs[0])
+    layer.node.node_tree.links.new(mask.outputs[0], tex_alpha.inputs[2])
     layer.node.node_tree.links.new(tex_alpha.outputs[0], mix.inputs[0])
     layer.node.node_tree.links.new(layer.node.node_tree.nodes[constants.OPAC_NAME].outputs[0], opacity.inputs[2])
 
@@ -153,6 +167,9 @@ def __setup_node_value(layer, channel):
     else:
         value = layer.node.node_tree.nodes.new(constants.NODES["RGB"])
         value.outputs[0].default_value = channel.inp.default_value
+    
+    #name value node
+    value.label = "Channel Value"
 
     return value
 
