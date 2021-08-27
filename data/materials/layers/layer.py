@@ -3,6 +3,7 @@ import os
 
 from .... import utils, constants
 from ....assets import utils_import
+from ... import utils_groups
 from . import layer_setup, layer_channels
 from .layer_types import layer_fill
 
@@ -370,13 +371,17 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             self.__move_asset_node_down(node)
 
     ### masks
-    def add_mask(self, mask_data):
+    def add_mask(self, mask_data, has_blend):
         """ gets the mask data properties and adds this mask to the top of the stack """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
 
         # add mask node
         node = self.__add_asset_group_node(mask_data)
         to_socket = self.get_mask_input(utils.active_material(bpy.context).lp.channel)
+
+        # add blend mode to mask
+        if has_blend:
+            self.__add_blend_mode_to_mask(node)
 
         # link mask node
         if to_socket.is_linked:
@@ -403,6 +408,42 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ returns if the given group is the top mask or not """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         return mask_group == self.get_mask_nodes(channel)[-1]
+
+    def __link_mask_blend_node(self, ntree, mix, group_in, group_out):
+        from_socket = group_out.inputs[0].links[0].from_socket
+        ntree.links.remove(group_out.inputs[0].links[0])
+
+        ntree.links.new(group_in.outputs[0], mix.inputs[1])
+        ntree.links.new(from_socket, mix.inputs[2])
+        ntree.links.new(mix.outputs[0], group_out.inputs[0])
+
+
+    def __add_blend_mode_to_mask(self, mask_node):
+        """ adds a mix node as well as previous mask input to the mask node and node group """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        mask_node.node_tree.inputs.new(constants.SOCKETS["FLOAT_FACTOR"], "Mask In")
+        mask_node.node_tree.inputs.move(len(mask_node.node_tree.inputs)-1, 0)
+        mask_node.inputs[0].default_value = 1
+        
+        # add mix node
+        mix = mask_node.node_tree.nodes.new(constants.NODES["MIX"])
+        mix.name = constants.MIX_MASK
+        mix.label = constants.MIX_MASK
+        mix.inputs[0].default_value = 1
+        mix.blend_type = "MULTIPLY"
+
+        # find group in and out nodes
+        group_in = None
+        group_out = None
+        for node in mask_node.node_tree.nodes:
+            if node.bl_idname == constants.NODES["GROUP_IN"]:
+                group_in = node
+            elif node.bl_idname == constants.NODES["GROUP_OUT"]:
+                group_out = node
+
+        # link mix node
+        if group_in and group_out:
+            self.__link_mask_blend_node(mask_node.node_tree, mix, group_in, group_out)
 
 
     ### filters

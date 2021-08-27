@@ -1,6 +1,6 @@
 import bpy
 
-from .... import utils
+from .... import utils, constants
 from ....ui import utils_ui
 from . import fill_settings
 
@@ -91,8 +91,16 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             # draw mask header
             row = box.row()
             row.prop(group_node, "hide", text="", icon="DISCLOSURE_TRI_RIGHT" if group_node.hide else "DISCLOSURE_TRI_DOWN", emboss=False)
+            row.prop(group_node, "mute", text="", icon="HIDE_ON" if group_node.mute else "HIDE_OFF", emboss=False)
             row.prop(group_node, "label", text="")
 
+            # draw mask blend options
+            if constants.MIX_MASK in group_node.node_tree.nodes:
+                subrow = row.row()
+                subrow.prop(group_node.node_tree.nodes[constants.MIX_MASK], "blend_type", text="", emboss=False)
+                subrow.prop(group_node.node_tree.nodes[constants.MIX_MASK].inputs[0], "default_value", text="")
+
+            # draw mask move options
             subrow = row.row(align=True)
             subcol = subrow.column(align=True)
             subcol.enabled = not layer.is_group_top_mask(group_node, mat.lp.channel)
@@ -106,6 +114,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
             op.node_name = group_node.name
             op.move_up = False
 
+            # draw mask remove
             row.operator("lp.remove_mask", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
 
             # draw group inputs

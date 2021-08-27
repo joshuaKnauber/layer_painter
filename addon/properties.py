@@ -36,15 +36,17 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
         return asset_files
 
 
-    def __asset_items(self, name, property):
+    def __asset_items(self, name, property, offset=0):
         items = [("NONE", f"-- Select a {name} --", f"Select a {name} to add it to the stack"), (None)]
         for i, asset in enumerate(getattr(self, property)):
-            items.append( (str(i), asset.name, asset.name) )
+            items.append( (str(i + offset), asset.name, asset.name) )
         return items
 
     def mask_items(self, context):
         """ returns the mask assets as a list of enum items """
-        return self.__asset_items("mask", "mask_assets")
+        masks = self.__asset_items("mask", "mask_assets")
+        filters = self.__asset_items("mask filter", "filter_assets", len(masks)-1)
+        return masks + [("", "", "", 0)] + filters
 
     def filter_items(self, context):
         """ returns the filter assets as a list of enum items """
@@ -53,7 +55,11 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
     def select_mask(self, context):
         """ called when a mask is selected to reset it and add the mask """
         if self.masks.isdigit():
-            utils.active_material(context).lp.selected.add_mask( self.mask_assets[int(self.masks)] )
+            index = int(self.masks)
+            if index < len(self.mask_assets):
+                utils.active_material(context).lp.selected.add_mask( self.mask_assets[index], True )
+            else:
+                utils.active_material(context).lp.selected.add_mask( self.filter_assets[index - len(self.mask_assets) - 1], False )
         self["masks"] = 0
 
     def select_filter(self, context):
