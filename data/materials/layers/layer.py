@@ -215,6 +215,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                 while node.bl_idname == constants.NODES["GROUP"]:
                     nodes.append(node)
                     node = node.outputs[0].links[0].to_node
+            nodes.reverse()
         elif self.layer_type == "PAINT":
             pass # TODO for paint layer
         return nodes
@@ -380,49 +381,49 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         if from_socket and to_socket:
             ntree.links.new(from_socket, to_socket)
 
-    def __move_asset_node_up(self, node):
+    def __move_asset_node_up(self, ntree, node):
         """ moves the given asset node up (make sure that not top asset before this!!!) """
         above = node.outputs[0].links[0].to_node
         to_socket = above.outputs[0].links[0].to_socket
 
-        self.node.node_tree.links.remove(above.outputs[0].links[0])
-        self.node.node_tree.links.remove(node.outputs[0].links[0])
+        ntree.links.remove(above.outputs[0].links[0])
+        ntree.links.remove(node.outputs[0].links[0])
 
         from_socket = None
         if node.inputs[0].is_linked:
             from_socket = node.inputs[0].links[0].from_socket
-            self.node.node_tree.links.remove(from_socket.links[0])
+            ntree.links.remove(from_socket.links[0])
 
-        self.node.node_tree.links.new(node.outputs[0], to_socket)
-        self.node.node_tree.links.new(above.outputs[0], node.inputs[0])
+        ntree.links.new(node.outputs[0], to_socket)
+        ntree.links.new(above.outputs[0], node.inputs[0])
         if from_socket:
-            self.node.node_tree.links.new(from_socket, above.inputs[0])
+            ntree.links.new(from_socket, above.inputs[0])
 
-    def __move_asset_node_down(self, node):
+    def __move_asset_node_down(self, ntree, node):
         """ moves the given asset node down (make sure that not bottom asset before this!!!) """
         below = node.inputs[0].links[0].from_node
         to_socket = node.outputs[0].links[0].to_socket
 
-        self.node.node_tree.links.remove(node.outputs[0].links[0])
-        self.node.node_tree.links.remove(node.inputs[0].links[0])
+        ntree.links.remove(node.outputs[0].links[0])
+        ntree.links.remove(node.inputs[0].links[0])
 
         from_socket = None
         if below.inputs[0].is_linked:
             from_socket = below.inputs[0].links[0].from_socket
-            self.node.node_tree.links.remove(below.inputs[0].links[0])
+            ntree.links.remove(below.inputs[0].links[0])
 
-        self.node.node_tree.links.new(below.outputs[0], to_socket)
-        self.node.node_tree.links.new(node.outputs[0], below.inputs[0])
+        ntree.links.new(below.outputs[0], to_socket)
+        ntree.links.new(node.outputs[0], below.inputs[0])
         if from_socket:
-            self.node.node_tree.links.new(from_socket, node.inputs[0])
+            ntree.links.new(from_socket, node.inputs[0])
 
-    def __move_asset_node(self, node, move_up):
+    def __move_asset_node(self, ntree, node, move_up):
         """ moves the given asset node up or down """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         if move_up:
-            self.__move_asset_node_up(node)
+            self.__move_asset_node_up(ntree, node)
         else:
-            self.__move_asset_node_down(node)
+            self.__move_asset_node_down(ntree, node)
 
     ### masks
     def add_mask(self, mask_data, has_blend):
@@ -458,7 +459,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ moves the given mask group up or down """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         self.remove_inside_preview()
-        self.__move_asset_node(mask_node, move_up)
+        self.__move_asset_node(self.node.node_tree, mask_node, move_up)
         
         utils.active_material(bpy.context).lp.update_preview()
 
@@ -553,7 +554,11 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def move_filter(self, filter_node, move_up):
         """ moves the given filter group up or down """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
-        self.__move_asset_node(filter_node, move_up)
+        if utils.active_material(bpy.context).lp.channel == "LAYER":
+            ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(self)]
+            self.__move_asset_node(ntree, filter_node, move_up)
+        else:
+            self.__move_asset_node(self.node.node_tree, filter_node, move_up)
 
     def is_group_top_filter(self, filter_group, channel):
         """ returns if the given group is the top filter or not """

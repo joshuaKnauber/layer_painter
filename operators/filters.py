@@ -58,10 +58,9 @@ class LP_OT_RemoveFilter(bpy.types.Operator):
         if utils.active_material(bpy.context).lp.channel == "LAYER":
             ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(mat.lp.selected)]
             filter = ntree.nodes[self.node_name]
-            mat.lp.selected.remove_filter(filter)
         else:
             filter = mat.lp.selected.node.node_tree.nodes[self.node_name]
-            mat.lp.selected.remove_filter(filter)
+        mat.lp.selected.remove_filter(filter)
         return {"FINISHED"}
 
 
@@ -81,6 +80,10 @@ class LP_OT_MoveFilter(bpy.types.Operator):
 
     def execute(self, context):
         mat = utils.active_material(context)
-        filter = mat.lp.selected.node.node_tree.nodes[self.node_name]
+        if utils.active_material(bpy.context).lp.channel == "LAYER":
+            ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(mat.lp.selected)]
+            filter = ntree.nodes[self.node_name]
+        else:
+            filter = mat.lp.selected.node.node_tree.nodes[self.node_name]
         mat.lp.selected.move_filter(filter, self.move_up)
         return {"FINISHED"}
