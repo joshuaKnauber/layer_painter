@@ -172,6 +172,11 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             return self.__get_layer_mask_nodes()
         else:
             return self.__get_channel_mask_nodes(channel)
+
+    def get_filter_nodes(self, channel):
+        """ returns a list of nodes which match the filters added to the given channel uid or 'LAYER' """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        return []
     
     
     ### update appearance
