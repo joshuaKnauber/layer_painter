@@ -84,7 +84,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
         self.mat_uid_ref = mat_uid
 
-        layer_setup.group_setup(self.node)
+        layer_setup.group_setup(self, self.node)
         layer_channels.setup(self)
         
     
@@ -206,11 +206,24 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             pass # TODO for paint layer
         return nodes
 
+    def __get_layer_filter_nodes(self):
+        """ returns a list of nodes for the layer filter nodes """
+        nodes = []
+        if self.layer_type == "FILL":
+            node = bpy.data.node_groups[constants.LAYER_FILTER_NAME(self)].nodes[constants.INPUT_NAME].outputs[0].links[0].to_node
+            if node.bl_idname == constants.NODES["GROUP"]:
+                while node.bl_idname == constants.NODES["GROUP"]:
+                    nodes.append(node)
+                    node = node.outputs[0].links[0].to_node
+        elif self.layer_type == "PAINT":
+            pass # TODO for paint layer
+        return nodes
+
     def get_filter_nodes(self, channel):
         """ returns a list of nodes which match the filters added to the given channel uid or 'LAYER' """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         if channel == "LAYER":
-            return []
+            return self.__get_layer_filter_nodes()
         else:
             return self.__get_channel_filter_nodes(channel)
     
@@ -345,8 +358,8 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
 
     ### assets
-    def __add_asset_group_node(self, asset_data):
-        node = self.node.node_tree.nodes.new(constants.NODES["GROUP"])
+    def __add_asset_group_node(self, ntree, asset_data):
+        node = ntree.nodes.new(constants.NODES["GROUP"])
         node.node_tree = utils_import.get_hidden_group_copy(os.path.join(constants.ASSET_LOC, asset_data.blend_file), asset_data.name)
         node.label = asset_data.name
         return node
@@ -418,7 +431,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         self.remove_inside_preview()
 
         # add mask node
-        node = self.__add_asset_group_node(mask_data)
+        node = self.__add_asset_group_node(self.node.node_tree, mask_data)
         to_socket = self.get_mask_input(utils.active_material(bpy.context).lp.channel)
 
         # add blend mode to mask
@@ -513,13 +526,19 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
 
         # add filter node
-        node = self.__add_asset_group_node(filter_data)
-        to_socket = self.get_filter_input(utils.active_material(bpy.context).lp.channel)
+        ntree = self.node.node_tree
+        if utils.active_material(bpy.context).lp.channel == "LAYER":
+            ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(self)]
+            node = self.__add_asset_group_node(ntree, filter_data)
+            to_socket = ntree.nodes[constants.OUTPUT_NAME].inputs[0]
+        else:
+            node = self.__add_asset_group_node(ntree, filter_data)
+            to_socket = self.get_filter_input(utils.active_material(bpy.context).lp.channel)
 
         # link filter node
         if to_socket.is_linked:
-            self.node.node_tree.links.new(to_socket.links[0].from_socket, node.inputs[0])
-        self.node.node_tree.links.new(node.outputs[0], to_socket)
+            ntree.links.new(to_socket.links[0].from_socket, node.inputs[0])
+        ntree.links.new(node.outputs[0], to_socket)
 
     def remove_filter(self, filter_node):
         """ removes the given filter node and its group """

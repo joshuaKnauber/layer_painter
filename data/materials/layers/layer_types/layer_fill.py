@@ -1,3 +1,5 @@
+import bpy
+
 from ..... import constants
 from .....data import utils_nodes
 
@@ -11,9 +13,13 @@ def setup_channel_nodes(layer, channel, endpoints):
     mix = __add_channel_mix(layer, channel, endpoints)
     _, _ = __add_channel_opacity(layer, mix)
 
+    # add channel layer filter
+    layer_filter = __add_layer_filter(layer, mix)
+    layer.node.node_tree.links.new(layer_filter.outputs[0], mix.inputs[2])
+
     # add channel value node
     value_node = __setup_node_value(layer, channel)
-    layer.node.node_tree.links.new(value_node.outputs[0], mix.inputs[2])
+    layer.node.node_tree.links.new(value_node.outputs[0], layer_filter.inputs[0])
 
 
 def remove_channel_nodes(layer, channel_uid):
@@ -54,7 +60,6 @@ def get_channel_opacity_socket(layer, channel_uid):
 def get_channel_value_node(layer, channel_uid):
     """ returns the node storing the value for the given channel uid """
     if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    inp = get_channel_mix_node(layer, channel_uid).inputs[2]
     node = get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node
     while node.bl_idname == constants.NODES["GROUP"]:
         node = node.inputs[0].links[0].from_node
@@ -64,7 +69,7 @@ def get_channel_value_node(layer, channel_uid):
 def get_channel_filter_socket(layer, channel_uid):
     """ returns the filter socket for the given channel uid """
     if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_mix_node(layer, channel_uid).inputs[2]
+    return get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node.inputs[0]
 
 
 def get_channel_texture_nodes(layer, channel_uid):
@@ -130,6 +135,13 @@ def __add_channel_mix(layer, channel, endpoints):
     layer.node.node_tree.links.new(mix.outputs[0], group_out)
 
     return mix
+
+
+def __add_layer_filter(layer, mix):
+    """ adds a node group and assigns the layer filter group """
+    node = layer.node.node_tree.nodes.new(constants.NODES["GROUP"])
+    node.node_tree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(layer)]
+    return node
 
 
 def __add_channel_opacity(layer, mix):
