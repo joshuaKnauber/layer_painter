@@ -120,7 +120,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def get_channel_enabled(self, channel_uid):
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         if self.layer_type == "FILL":
-            return not self.node.node_tree.nodes[channel_uid].mute
+            return not layer_fill.get_channel_mix_node(self, channel_uid).mute
         elif self.layer_type == "PAINT":
             pass # TODO for paint layer
     
@@ -139,6 +139,18 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         else:
             if self.layer_type == "FILL":
                 return layer_fill.get_channel_mask_socket(self, channel)
+            elif self.layer_type == "PAINT":
+                pass # TODO for paint layer
+
+    def get_filter_input(self, channel):
+        """ returns the input for the given channel uid or 'LAYER' """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if channel == "LAYER":
+            # return self.node.node_tree.nodes[constants.OPAC_NAME].inputs[2]
+            pass
+        else:
+            if self.layer_type == "FILL":
+                return layer_fill.get_channel_filter_socket(self, channel)
             elif self.layer_type == "PAINT":
                 pass # TODO for paint layer
 
@@ -180,10 +192,27 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         else:
             return self.__get_channel_mask_nodes(channel)
 
+    def __get_channel_filter_nodes(self, channel_uid):
+        """ returns a list of nodes for the channels filter nodes """
+        nodes = []
+        if self.layer_type == "FILL":
+            socket = layer_fill.get_channel_filter_socket(self, channel_uid)
+            node = socket.links[0].from_node
+            if node.bl_idname == constants.NODES["GROUP"]:
+                while node.bl_idname == constants.NODES["GROUP"]:
+                    nodes.append(node)
+                    node = node.inputs[0].links[0].from_node
+        elif self.layer_type == "PAINT":
+            pass # TODO for paint layer
+        return nodes
+
     def get_filter_nodes(self, channel):
         """ returns a list of nodes which match the filters added to the given channel uid or 'LAYER' """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
-        return []
+        if channel == "LAYER":
+            return []
+        else:
+            return self.__get_channel_filter_nodes(channel)
     
     
     ### update appearance
@@ -482,14 +511,33 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def add_filter(self, filter_data):
         """ gets the filter data properties and adds this filter to the top of the stack """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
-        print(filter_data.name)
+
+        # add filter node
+        node = self.__add_asset_group_node(filter_data)
+        to_socket = self.get_filter_input(utils.active_material(bpy.context).lp.channel)
+
+        # link filter node
+        if to_socket.is_linked:
+            self.node.node_tree.links.new(to_socket.links[0].from_socket, node.inputs[0])
+        self.node.node_tree.links.new(node.outputs[0], to_socket)
 
     def remove_filter(self, filter_node):
         """ removes the given filter node and its group """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         self.__remove_asset_node(filter_node)
+        self.get_layer_opacity_socket().default_value = self.get_layer_opacity_socket().default_value # trigger viewport update to reflect removed mask
 
     def move_filter(self, filter_node, move_up):
         """ moves the given filter group up or down """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         self.__move_asset_node(filter_node, move_up)
+
+    def is_group_top_filter(self, filter_group, channel):
+        """ returns if the given group is the top filter or not """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        return filter_group == self.get_filter_nodes(channel)[0]
+
+    def is_group_bottom_filter(self, filter_group, channel):
+        """ returns if the given group is the top filter or not """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        return filter_group == self.get_filter_nodes(channel)[-1]

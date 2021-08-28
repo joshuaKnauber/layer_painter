@@ -145,22 +145,22 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 row.prop(group_node, "mute", text="", icon="HIDE_ON" if group_node.mute else "HIDE_OFF", emboss=False)
                 row.prop(group_node, "label", text="")
 
-                # draw mask move options
+                # draw filter move options
                 subrow = row.row(align=True)
                 subcol = subrow.column(align=True)
-                subcol.enabled = not layer.is_group_top_mask(group_node, mat.lp.channel)
-                op = subcol.operator("lp.move_mask", text="", icon="TRIA_UP")
+                subcol.enabled = not layer.is_group_top_filter(group_node, mat.lp.channel)
+                op = subcol.operator("lp.move_filter", text="", icon="TRIA_UP")
                 op.node_name = group_node.name
                 op.move_up = True
 
                 subcol = subrow.column(align=True)
-                subcol.enabled = not layer.is_group_bottom_mask(group_node, mat.lp.channel)
-                op = subcol.operator("lp.move_mask", text="", icon="TRIA_DOWN")
+                subcol.enabled = not layer.is_group_bottom_filter(group_node, mat.lp.channel)
+                op = subcol.operator("lp.move_filter", text="", icon="TRIA_DOWN")
                 op.node_name = group_node.name
                 op.move_up = False
 
-                # draw mask remove
-                row.operator("lp.remove_mask", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
+                # draw filter remove
+                row.operator("lp.remove_filter", text="", emboss=False, icon="PANEL_CLOSE").node_name = group_node.name
 
                 # draw group inputs
                 if not group_node.hide:

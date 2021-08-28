@@ -38,3 +38,44 @@ class LP_OT_AddFilter(bpy.types.Operator):
 
     def invoke(self, context, event):
         return context.window_manager.invoke_props_dialog(self, width=300)
+
+
+class LP_OT_RemoveFilter(bpy.types.Operator):
+    bl_idname = "lp.remove_filter"
+    bl_label = "Remove Filter"
+    bl_description = "Removes this filter"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+    
+    node_name: bpy.props.StringProperty(options={"HIDDEN"})
+
+    @classmethod
+    def poll(cls, context):
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected
+
+    def execute(self, context):
+        mat = utils.active_material(context)
+        filter = mat.lp.selected.node.node_tree.nodes[self.node_name]
+        mat.lp.selected.remove_filter(filter)
+        return {"FINISHED"}
+
+
+class LP_OT_MoveFilter(bpy.types.Operator):
+    bl_idname = "lp.move_filter"
+    bl_label = "Move Filter"
+    bl_description = "Moves this filter"
+    bl_options = {"REGISTER", "UNDO", "INTERNAL"}
+    
+    node_name: bpy.props.StringProperty(options={"HIDDEN"})
+    move_up: bpy.props.BoolProperty(options={"HIDDEN"})
+
+    @classmethod
+    def poll(cls, context):
+        mat = utils.active_material(context)
+        return utils_operator.base_poll(context) and mat.lp.selected
+
+    def execute(self, context):
+        mat = utils.active_material(context)
+        filter = mat.lp.selected.node.node_tree.nodes[self.node_name]
+        mat.lp.selected.move_filter(filter, self.move_up)
+        return {"FINISHED"}

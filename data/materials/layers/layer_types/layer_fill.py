@@ -54,7 +54,17 @@ def get_channel_opacity_socket(layer, channel_uid):
 def get_channel_value_node(layer, channel_uid):
     """ returns the node storing the value for the given channel uid """
     if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node
+    inp = get_channel_mix_node(layer, channel_uid).inputs[2]
+    node = get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node
+    while node.bl_idname == constants.NODES["GROUP"]:
+        node = node.inputs[0].links[0].from_node
+    return node
+
+
+def get_channel_filter_socket(layer, channel_uid):
+    """ returns the filter socket for the given channel uid """
+    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return get_channel_mix_node(layer, channel_uid).inputs[2]
 
 
 def get_channel_texture_nodes(layer, channel_uid):

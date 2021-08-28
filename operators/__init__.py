@@ -27,6 +27,8 @@ classes = (
     masks.LP_OT_RemoveMask,
     masks.LP_OT_MoveMask,
     filters.LP_OT_AddFilter,
+    filters.LP_OT_RemoveFilter,
+    filters.LP_OT_MoveFilter,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 
