@@ -379,6 +379,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def add_mask(self, mask_data, has_blend):
         """ gets the mask data properties and adds this mask to the top of the stack """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.remove_inside_preview()
 
         # add mask node
         node = self.__add_asset_group_node(mask_data)
@@ -393,16 +394,24 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             self.node.node_tree.links.new(to_socket.links[0].from_socket, node.inputs[0])
         self.node.node_tree.links.new(node.outputs[0], to_socket)
 
+        utils.active_material(bpy.context).lp.update_preview()
+
     def remove_mask(self, mask_node):
         """ removes the given mask node and its group """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.remove_inside_preview()
         self.__remove_asset_node(mask_node)
         self.get_layer_opacity_socket().default_value = self.get_layer_opacity_socket().default_value # trigger viewport update to reflect removed mask
+
+        utils.active_material(bpy.context).lp.update_preview()
 
     def move_mask(self, mask_node, move_up):
         """ moves the given mask group up or down """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        self.remove_inside_preview()
         self.__move_asset_node(mask_node, move_up)
+        
+        utils.active_material(bpy.context).lp.update_preview()
 
     def is_group_top_mask(self, mask_group, channel):
         """ returns if the given group is the top mask or not """
@@ -421,7 +430,6 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         ntree.links.new(group_in.outputs[0], mix.inputs[1])
         ntree.links.new(from_socket, mix.inputs[2])
         ntree.links.new(mix.outputs[0], group_out.inputs[0])
-
 
     def __add_blend_mode_to_mask(self, mask_node):
         """ adds a mix node as well as previous mask input to the mask node and node group """
@@ -449,6 +457,18 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         # link mix node
         if group_in and group_out:
             self.__link_mask_blend_node(mask_node.node_tree, mix, group_in, group_out)
+
+    def remove_inside_preview(self):
+        """ stops previewing this layers mask """
+        for link in self.node.node_tree.nodes[constants.OUTPUT_NAME].inputs[0].links:
+            self.node.node_tree.links.remove(link)
+
+    def preview_masks(self):
+        """ connects the last mask in the stack to the preview output """
+        self.remove_inside_preview()
+        masks = self.get_mask_nodes(utils.active_material(bpy.context).lp.channel)
+        if len(masks):
+            self.node.node_tree.links.new(masks[0].outputs[0], self.node.node_tree.nodes[constants.OUTPUT_NAME].inputs[0])
 
 
     ### filters

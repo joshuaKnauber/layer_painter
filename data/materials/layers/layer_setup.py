@@ -4,7 +4,8 @@ from ....data import utils_groups
 
 def group_setup(node):
     # add preview output to layer node
-    utils_groups.add_output(node, constants.SOCKETS["COLOR"], constants.PREVIEW_OUT_NAME)
+    _, out = utils_groups.add_output(node, constants.SOCKETS["COLOR"], constants.PREVIEW_OUT_NAME)
+    out.default_value = (1,1,1,1)
 
     # add layer opacity node to group tree
     opacity = node.node_tree.nodes.new(constants.NODES["MIX"])

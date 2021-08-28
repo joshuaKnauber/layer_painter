@@ -25,10 +25,15 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
     layers: bpy.props.CollectionProperty(type=LP_LayerProperties)
 
+    def update_selected(self, context):
+        """ called when a different layer is selected """
+        self.update_preview()
+
     selected_index: bpy.props.IntProperty(name="Selected Layer",
                                     description="Index of the selected layer",
                                     min=0,
-                                    default=0)
+                                    default=0,
+                                    update=update_selected)
     
     @property
     def selected(self):
@@ -55,9 +60,14 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
             items.append( (channel.uid, channel.name, channel.inp.name) )
         return items
 
+    def update_selected_channel(self, context):
+        """ called when the selected channel is updated """
+        self.update_preview()
+
     channel: bpy.props.EnumProperty(name="Channel",
                                     description="Select the channel that should be affected",
-                                    items=channel_items)
+                                    items=channel_items,
+                                    update=update_selected_channel)
 
 
     ### methods to get layers
@@ -114,7 +124,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
         # count up position
         if len(self.layers) > 1:
-            self.selected_index += 1
+            self["selected_index"] += 1
 
         # initialize layer
         layer = self.layers[self.selected_index]
@@ -260,6 +270,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
         items = []
         for channel in self.channels:
             items.append((channel.uid, channel.name, channel.name))
+        items += [(None), ("MASKS","Masks","Preview the mask stack")]
         return items
 
     def __remove_preview(self):
@@ -274,14 +285,22 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
     def __connect_preview(self, emit):
         """ connects the top layers preview channel to the emit node """
-        channel = self.channel_by_uid(self.preview_channel)
-        inp = channel.inp
+        # connect to selected channel output
+        if self.preview_channel in self.channel_uids:
+            channel = self.channel_by_uid(self.preview_channel)
+            inp = channel.inp
 
-        # connect emission to channel output
-        if inp:
-            emit.inputs[0].default_value = (1, 0, 0.6, 1)
-            if len(inp.links):
-                self.ntree.links.new(inp.links[0].from_socket, emit.inputs[0])
+            # connect emission to channel output
+            if inp:
+                if len(inp.links):
+                    self.ntree.links.new(inp.links[0].from_socket, emit.inputs[0])
+
+        # connect to preview output
+        elif self.selected:
+            self.ntree.links.new(self.selected.node.outputs[0], emit.inputs[0])
+
+            if self.preview_channel == "MASKS":
+                self.selected.preview_masks()
 
     def __add_preview(self):
         """ adds a preview node for the selected channel on the top layer """
@@ -297,6 +316,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
         # add emission and connect to output
         emit = self.ntree.nodes.new(constants.NODES["EMIT"])
+        emit.inputs[0].default_value = (1, 0, 0.6, 1)
         emit.name = constants.PREVIEW_EMIT_NAME
         self.ntree.links.new(emit.outputs[0], out.inputs[0])
 
@@ -305,7 +325,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
     def update_preview(self, context=None):
         """ updates the preview mode to show the selected settings """
         # disable preview if no channels
-        if not len(self.channels):
+        if not len(self.channels) and self.preview_channel in self.channel_uids:
             self["use_preview"] = False
             self.__remove_preview()
 
@@ -317,12 +337,16 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
             if self.use_preview:
                 self.__add_preview()
 
+        # update viewport
+        if self.selected:
+            self.selected.get_layer_opacity_socket().default_value = self.selected.get_layer_opacity_socket().default_value
+
     use_preview: bpy.props.BoolProperty(name="Preview",
                                         description="Turn on a preview mode for this material",
                                         default=False,
                                         update=update_preview)
 
-    preview_channel: bpy.props.EnumProperty(name="Preview Channel",
-                                            description="Channel to preview",
+    preview_channel: bpy.props.EnumProperty(name="Preview",
+                                            description="Select what to preview",
                                             items=get_preview_channel_items,
                                             update=update_preview)
