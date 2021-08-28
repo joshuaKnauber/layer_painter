@@ -364,7 +364,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         node.label = asset_data.name
         return node
 
-    def __remove_asset_node(self, node):
+    def __remove_asset_node(self, ntree, node):
         """ removes the given asset node from the tree as well as its group """
         group = node.node_tree
         
@@ -373,12 +373,12 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
             from_socket = node.inputs[0].links[0].from_socket
         to_socket = node.outputs[0].links[0].to_socket
 
-        self.node.node_tree.nodes.remove(node)
+        ntree.nodes.remove(node)
         if group.users == 0:
             bpy.data.node_groups.remove(group)
 
         if from_socket and to_socket:
-            self.node.node_tree.links.new(from_socket, to_socket)
+            ntree.links.new(from_socket, to_socket)
 
     def __move_asset_node_up(self, node):
         """ moves the given asset node up (make sure that not top asset before this!!!) """
@@ -449,7 +449,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ removes the given mask node and its group """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         self.remove_inside_preview()
-        self.__remove_asset_node(mask_node)
+        self.__remove_asset_node(self.node.node_tree, mask_node)
         self.get_layer_opacity_socket().default_value = self.get_layer_opacity_socket().default_value # trigger viewport update to reflect removed mask
 
         utils.active_material(bpy.context).lp.update_preview()
@@ -543,7 +543,11 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def remove_filter(self, filter_node):
         """ removes the given filter node and its group """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
-        self.__remove_asset_node(filter_node)
+        if utils.active_material(bpy.context).lp.channel == "LAYER":
+            ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(self)]
+            self.__remove_asset_node(ntree, filter_node)
+        else:
+            self.__remove_asset_node(self.node.node_tree, filter_node)
         self.get_layer_opacity_socket().default_value = self.get_layer_opacity_socket().default_value # trigger viewport update to reflect removed mask
 
     def move_filter(self, filter_node, move_up):
