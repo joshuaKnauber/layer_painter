@@ -57,13 +57,15 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
         "returns the channels of this material as a list of enum items including the layer channel"
         items = [("LAYER", "Layer", "The entire layer, including all channels")]
         for channel in self.channels:
-            items.append( (channel.uid, channel.name, channel.inp.name) )
+            if self.selected and self.selected.get_channel_enabled(channel.uid):
+                items.append( (channel.uid, channel.name, channel.inp.name) )
         return items
 
     def update_selected_channel(self, context):
         """ called when the selected channel is updated """
         self.update_preview()
 
+    # this is always in relation to the selected layer. The items will only include enabled channels and LAYER
     channel: bpy.props.EnumProperty(name="Channel",
                                     description="Select the channel that should be affected",
                                     items=channel_items,

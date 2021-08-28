@@ -116,6 +116,13 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def get_channel_endpoint_indices(self, channel_uid):
         """ returns the indices for the channel in and output for the given uid """
         return self.get_channel_input_index(channel_uid), self.get_channel_output_index(channel_uid)
+
+    def get_channel_enabled(self, channel_uid):
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if self.layer_type == "FILL":
+            return not self.node.node_tree.nodes[channel_uid].mute
+        elif self.layer_type == "PAINT":
+            pass # TODO for paint layer
     
     
     ### get sockets and nodes

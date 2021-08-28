@@ -19,7 +19,7 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
     # expand toggle for the mapping settings
     expand_mapping: bpy.props.BoolProperty(name="Expand",
                                            description="Show the mapping settings of the layer",
-                                           default=True)
+                                           default=False)
     
     # mask asset items
     mask_assets: bpy.props.CollectionProperty(type=LP_AssetProperties)
