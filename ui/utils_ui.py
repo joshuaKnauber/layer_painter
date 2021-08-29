@@ -9,9 +9,6 @@ def base_poll(context):
 
 def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
     """ draws the given node group as an lp group, for example a mask """
-    # layout.use_property_split = True
-    # layout.use_property_decorate = False
-
     # draw all inputs
     for i, inp in enumerate(group_node.inputs):
         if i >= inp_offset:

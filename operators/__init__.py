@@ -1,5 +1,5 @@
 import bpy
-from . import layers, channels, presets, interface, assets, masks, filters, paint
+from . import layers, channels, presets, interface, assets, masks, filters, paint, baking
 
 
 classes = (
@@ -33,6 +33,10 @@ classes = (
     paint.LP_OT_StopPainting,
     paint.LP_OT_ToggleTexture,
     paint.LP_OT_ImageMapping,
+    baking.LP_OT_BakeChannelsModal,
+    baking.LP_OT_BakeSetupChannel,
+    baking.LP_OT_BakeCleanupChannel,
+    baking.LP_OT_BakeFinish,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 

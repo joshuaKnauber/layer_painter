@@ -4,7 +4,8 @@ import json
 
 from ..operators.assets import get_pcoll
 from ..data.assets.asset import LP_AssetProperties
-from .. import constants, utils
+from ..data.export.export import LP_BakeProperties
+from .. import constants
 
 
 class LP_AddonProperties(bpy.types.PropertyGroup):
@@ -64,3 +65,6 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
     filters: bpy.props.EnumProperty(name="Filters",
                                 description="Select one of these filters to add it to the stack",
                                 items=filter_items)
+
+    # export baking props
+    export: bpy.props.PointerProperty(type=LP_BakeProperties)

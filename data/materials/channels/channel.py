@@ -95,3 +95,12 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
         """ stops this channels input from being associated with this channel """
         if self.inp:
             self.inp.uid = ""
+
+
+    # include this channel in baking or not
+    bake: bpy.props.BoolProperty(name="Bake",
+                                description="Bake this channel",
+                                default=True)
+
+    # used to display the status of this channel bake in the ui during exporting
+    completed_bake: bpy.props.BoolProperty(default=False)
