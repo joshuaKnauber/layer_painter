@@ -86,9 +86,14 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
         layout.separator()
 
         if mat.lp.channel:
+            mask_groups = layer.get_mask_nodes(mat.lp.channel)
+
+            if len(mask_groups) == 0:
+                box = layout.box()
+                box.label(text="No masks added for "+mat.lp.channel_name, icon="INFO")
 
             # draw mask stack
-            for group_node in layer.get_mask_nodes(mat.lp.channel):
+            for group_node in mask_groups:
                 box = layout.box()
 
                 # draw mask header
@@ -134,9 +139,14 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
         layout.separator()
 
         if mat.lp.channel:
+            filter_groups = layer.get_filter_nodes(mat.lp.channel)
+
+            if len(filter_groups) == 0:
+                box = layout.box()
+                box.label(text="No filters added for "+mat.lp.channel_name, icon="INFO")
 
             # draw filter stack
-            for group_node in layer.get_filter_nodes(mat.lp.channel):
+            for group_node in filter_groups:
                 box = layout.box()
 
                 # draw filter header

@@ -65,6 +65,13 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
         """ called when the selected channel is updated """
         self.update_preview()
 
+    @property
+    def channel_name(self):
+        if self.channel == "LAYER":
+            return "Layer"
+        else:
+            return self.channel_by_uid(self.channel).name
+
     # this is always in relation to the selected layer. The items will only include enabled channels and LAYER
     channel: bpy.props.EnumProperty(name="Channel",
                                     description="Select the channel that should be affected",
