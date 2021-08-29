@@ -30,7 +30,7 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
             row.label(text=item["name"])
 
             row = split.row()
-            op = row.operator("lp.load_thumbnail", text=os.path.basename(item['thumbnail']) if item["thumbnail"] else "(No Thumbnail)", emboss=False, icon="FILE_FOLDER")
+            op = row.operator("lp.load_thumbnail", text=os.path.basename(item['thumbnail']) if item["thumbnail"] else "(No Thumbnail)", emboss=False, icon="FILE_IMAGE")
             op.uid = uid
             op.name = item["name"]
             op.asset_type = asset_type
@@ -52,7 +52,7 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
             box = layout.box()
             row = box.row()
             row.label(text=asset_file["file_name"])
-            op = row.operator("lp.load_thumbnails", text="", emboss=False, icon="FILE_FOLDER")
+            op = row.operator("lp.load_thumbnails", text="", emboss=False, icon="RENDERLAYERS")
             op.uid = asset_file["uid"]
             op = row.operator("lp.remove_asset_file", text="", emboss=False, icon="TRASH")
             op.uid = asset_file["uid"]
