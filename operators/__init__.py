@@ -1,5 +1,5 @@
 import bpy
-from . import layers, channels, presets, interface, assets, masks, filters
+from . import layers, channels, presets, interface, assets, masks, filters, paint
 
 
 classes = (
@@ -29,6 +29,8 @@ classes = (
     filters.LP_OT_AddFilter,
     filters.LP_OT_RemoveFilter,
     filters.LP_OT_MoveFilter,
+    paint.LP_OT_PaintChannel,
+    paint.LP_OT_StopPainting,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 

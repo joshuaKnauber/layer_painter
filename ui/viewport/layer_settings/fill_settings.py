@@ -45,19 +45,27 @@ def draw_fill_channel(layout, mat, layer, channel, channel_mix):
         op.material = mat.name
         op.layer_uid = layer.uid
         op.channel_uid = channel.uid
+
+        split = row.split(factor=0.7)
         
         # channel color value
+        value_node = layer_fill.get_channel_value_node(layer, channel.uid)
         if data_type == "COL":
-            value_node = layer_fill.get_channel_value_node(layer, channel.uid)
 
             if value_node.bl_idname == constants.NODES["RGB"]:
-                row.prop(value_node.outputs[0], "default_value", text="")
+                split.prop(value_node.outputs[0], "default_value", text="")
             else:
-                row.prop(value_node.inputs[0], "default_value", text="", slider=True)
+                split.prop(value_node.inputs[0], "default_value", text="", slider=True)
 
         # channel texture value
         elif data_type == "TEX":
-            row.template_ID(layer_fill.get_channel_value_node(layer, channel.uid), "image", new="image.new", open="image.open")
+            split.template_ID(layer_fill.get_channel_value_node(layer, channel.uid), "image", new="image.new", open="image.open")
+
+        # draw paint buttons
+        if data_type == "TEX" and bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == value_node.image:
+            split.operator("lp.stop_painting", icon="CHECKMARK")
+        else:
+            split.operator("lp.paint_channel", icon="BRUSH_DATA").channel = channel.uid
 
 
 def draw_mapping(layout, context, layer):

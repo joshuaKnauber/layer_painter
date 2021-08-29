@@ -121,6 +121,15 @@ def cycle_channel_data_type(layer, channel_uid):
         layer.node.node_tree.links.new(value_node.outputs[0], connect_socket)
 
 
+def set_channel_data_type(layer, channel_uid, to_type):
+    """ sets the channel data type to the given type in ("COL", "TEX") """
+    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+
+    data_type = get_channel_data_type(layer, channel_uid)
+    if data_type != to_type:
+        cycle_channel_data_type(layer, channel_uid)
+
+
 def __add_channel_mix(layer, channel, endpoints):
     """ adds the mix node representing the starting point for the given channel in this layer """
     # add mix node
