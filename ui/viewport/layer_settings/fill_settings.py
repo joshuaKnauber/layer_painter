@@ -43,10 +43,11 @@ def draw_fill_channel(layout, mat, layer, channel, channel_mix):
 
         # channel data type cycle button
         data_icon = "SHADING_RENDERED" if data_type == "COL" else "SHADING_TEXTURE"
-        op = row.operator("lp.cycle_channel_data", text="", icon=data_icon)
+        op = row.operator("lp.cycle_channel_data", text="", icon=data_icon, emboss=False)
         op.material = mat.name
         op.layer_uid = layer.uid
         op.channel_uid = channel.uid
+        row.separator()
 
         
         # channel color value

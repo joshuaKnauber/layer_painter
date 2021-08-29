@@ -23,6 +23,7 @@ def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
                 op.node_group = ntree.name
                 op.node_name = group_node.name
                 op.input_index = i
+                row.separator()
 
             # draw input value
             if len(inp.links) == 0:
@@ -42,15 +43,22 @@ def draw_texture_input(layout, tex_node, channel=None, ntree=None, name="", icon
     """ draws a row for the given tex node including the painting options """
     if tex_node:
         if name:
-            layout.template_ID(tex_node, "image", new="image.new", open="image.open", text=name)
+            if not tex_node.image:
+                layout.template_ID(tex_node, "image", new="image.new", open="image.open", text=name, live_icon=True)
+            else:
+                layout.template_ID(tex_node, "image", text=name, live_icon=True)
         else:
-            layout.template_ID(tex_node, "image", new="image.new", open="image.open")
+            if not tex_node.image:
+                layout.template_ID(tex_node, "image", new="image.new", open="image.open", live_icon=True)
+            else:
+                layout.template_ID(tex_node, "image", live_icon=True)
 
     row = layout.row(align=True)
     if tex_node and tex_node.image and ntree and edit_mapping:
-        op = row.operator("lp.image_mapping", text="", icon="UV")
+        op = row.operator("lp.image_mapping", text="", icon="ORIENTATION_LOCAL")
         op.node_group = ntree.name
         op.node_name = tex_node.name
+        row.separator()
 
     if bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == tex_node.image:
         row.operator("lp.stop_painting", icon="CHECKMARK", text="Finish" if not icon_only else "")
