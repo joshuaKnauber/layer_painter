@@ -3,7 +3,7 @@ import os
 
 from .... import utils, constants
 from ....assets import utils_import
-from ... import utils_groups
+from ... import utils_nodes
 from . import layer_setup, layer_channels
 from .layer_types import layer_fill
 
@@ -243,14 +243,19 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
 
     # node utility
-    def texture_setup(self):
+    def texture_setup(self, ntree=None):
         """ sets up texture nodes and returns the texture node """
-        tex = self.node.node_tree.nodes.new(constants.NODES["TEX"])
-        mapp = self.node.node_tree.nodes.new(constants.NODES["MAPPING"])
-        coord = self.node.node_tree.nodes.new(constants.NODES["COORDS"])
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
 
-        self.node.node_tree.links.new(coord.outputs["UV"], mapp.inputs[0])
-        self.node.node_tree.links.new(mapp.outputs[0], tex.inputs[0])
+        if ntree == None:
+            ntree = self.node.node_tree
+
+        tex = ntree.nodes.new(constants.NODES["TEX"])
+        mapp = ntree.nodes.new(constants.NODES["MAPPING"])
+        coord = ntree.nodes.new(constants.NODES["COORDS"])
+
+        ntree.links.new(coord.outputs["UV"], mapp.inputs[0])
+        ntree.links.new(mapp.outputs[0], tex.inputs[0])
         return tex
         
         
@@ -373,6 +378,10 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         if node.inputs[0].is_linked:
             from_socket = node.inputs[0].links[0].from_socket
         to_socket = node.outputs[0].links[0].to_socket
+
+        for inp in node.inputs:
+            if inp.is_linked and not inp == node.inputs[0]:
+                utils_nodes.remove_connected_left(ntree, inp.links[0].from_node)
 
         ntree.nodes.remove(node)
         if group.users == 0:

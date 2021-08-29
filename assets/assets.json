@@ -1,3 +1,28 @@
 {
     "files": [
+        {
+            "file_name": "assets.blend",
+            "uid": "bd58a9ab56",
+            "masks": [
+                {
+                    "name": "Noise",
+                    "thumbnail": "C:\\Users\\joshu\\AppData\\Roaming\\Blender Foundation\\Blender\\2.92\\scripts\\addons\\layer_painter\\assets\\files\\imgs\\Noise.png"
+                },
+                {
+                    "name": "Checker",
+                    "thumbnail": "C:\\Users\\joshu\\AppData\\Roaming\\Blender Foundation\\Blender\\2.92\\scripts\\addons\\layer_painter\\assets\\files\\imgs\\Checker.png"
+                }
+            ],
+            "filters": [
+                {
+                    "name": "Curves",
+                    "thumbnail": "C:\\Users\\joshu\\AppData\\Roaming\\Blender Foundation\\Blender\\2.92\\scripts\\addons\\layer_painter\\assets\\files\\imgs\\Curves.png"
+                },
+                {
+                    "name": "Color Ramp",
+                    "thumbnail": "C:\\Users\\joshu\\AppData\\Roaming\\Blender Foundation\\Blender\\2.92\\scripts\\addons\\layer_painter\\assets\\files\\imgs\\Color Ramp.png"
+                }
+            ]
+        }
+    ]
 }

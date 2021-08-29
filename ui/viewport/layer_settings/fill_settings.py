@@ -1,4 +1,6 @@
 import bpy
+
+from ... import utils_ui
 from .... import constants
 from ....data.materials.layers.layer_types import layer_fill
 
@@ -46,9 +48,9 @@ def draw_fill_channel(layout, mat, layer, channel, channel_mix):
         op.layer_uid = layer.uid
         op.channel_uid = channel.uid
 
-        split = row.split(factor=0.7)
         
         # channel color value
+        split = row.split(factor=0.7)
         value_node = layer_fill.get_channel_value_node(layer, channel.uid)
         if data_type == "COL":
 
@@ -57,15 +59,7 @@ def draw_fill_channel(layout, mat, layer, channel, channel_mix):
             else:
                 split.prop(value_node.inputs[0], "default_value", text="", slider=True)
 
-        # channel texture value
-        elif data_type == "TEX":
-            split.template_ID(layer_fill.get_channel_value_node(layer, channel.uid), "image", new="image.new", open="image.open")
-
-        # draw paint buttons
-        if data_type == "TEX" and bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == value_node.image:
-            split.operator("lp.stop_painting", icon="CHECKMARK")
-        else:
-            split.operator("lp.paint_channel", icon="BRUSH_DATA").channel = channel.uid
+        utils_ui.draw_texture_input(split, value_node if data_type == "TEX" else None, channel=channel.uid)
 
 
 def draw_mapping(layout, context, layer):

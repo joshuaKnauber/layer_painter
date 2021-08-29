@@ -31,6 +31,8 @@ classes = (
     filters.LP_OT_MoveFilter,
     paint.LP_OT_PaintChannel,
     paint.LP_OT_StopPainting,
+    paint.LP_OT_ToggleTexture,
+    paint.LP_OT_ImageMapping,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 
