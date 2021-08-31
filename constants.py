@@ -46,14 +46,24 @@ OUTPUT_NAME = "OUTPUTS"
 MIX_MASK = "MASK_MIX"
 
 
-# name of the preview output
-PREVIEW_OUT_NAME = "PREVIEW"
-
 # name of the preview emission node
 PREVIEW_EMIT_NAME = "LP Preview Emit"
 
 # name of the preview output node
 PREVIEW_OUT_NAME = "LP Preview Out"
+
+
+# name of the export emission node
+EXPORT_EMIT_NAME = "LP Export Emit"
+
+# name of the export output
+EXPORT_OUT_NAME = "LP Export Out"
+
+# name of the temporary bake image
+BAKE_IMG_NAME = "TMP_BAKE"
+
+# name of the temporary bake image node
+BAKE_IMG_NODE = "TMP_TEX"
 
 
 # location of the asset blend files

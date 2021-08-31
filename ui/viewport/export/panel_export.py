@@ -25,7 +25,6 @@ class LP_PT_ExportPanel(bpy.types.Panel):
         self.layout.label(text=f"Export {mat.name}")
 
     def draw(self, context):
-        self.layout.label(text="WIP - ONLY UI NO FUNCTIONALITY", icon="ERROR")
         if baking.is_baking():
             self.draw_bake_queue(context)
         else:
@@ -67,6 +66,12 @@ class LP_PT_ExportPanel(bpy.types.Panel):
         
         layout.separator()
 
+        if context.selected_objects:
+            label = f"Bake {(', ').join([ob.name for ob in context.selected_objects])}"
+        else:
+            label = "No objects selected"
+
         row = layout.row()
+        row.enabled = bool(context.selected_objects)
         row.scale_y = 1.5
-        row.operator("lp.bake_modal", text="Bake and Export", icon="RENDER_STILL")
+        row.operator("lp.bake_modal", text=label, icon="RENDER_STILL")
