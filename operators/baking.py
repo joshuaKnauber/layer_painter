@@ -38,12 +38,22 @@ class LP_OT_BakeSetupChannel(bpy.types.Operator):
 
         return emit
 
+    def setup_texture(self, context, ntree, is_data):
+        # set up image in material
+        tex = ntree.nodes.new(constants.NODES["TEX"])
+        tex.name = constants.BAKE_IMG_NODE
+        tex.image = utils_paint.create_image(constants.BAKE_IMG_NAME, context.scene.lp.export.resolution, context.scene.lp.export.base_color, is_data)
+        ntree.nodes.active = tex
+
     def execute(self, context):
         mat = utils.active_material(context)
         channel = mat.lp.channel_by_uid(self.channel)
 
         # set up bake nodes
         emit = self.add_bake_setup(mat.node_tree)
+
+        # set up texture
+        self.setup_texture(context, mat.node_tree, is_data=channel.is_data)
 
         # set color
         if channel.inp.bl_idname == constants.SOCKETS["COLOR"]:
@@ -72,6 +82,15 @@ class LP_OT_BakeCleanupChannel(bpy.types.Operator):
         if constants.EXPORT_EMIT_NAME in ntree.nodes:
             ntree.nodes.remove(ntree.nodes[constants.EXPORT_EMIT_NAME])
 
+    def remove_texture(self, ntree):
+        # remove bake image node
+        if constants.BAKE_IMG_NODE in ntree.nodes:
+            ntree.nodes.remove(ntree.nodes[constants.BAKE_IMG_NODE])
+
+        # remove bake image
+        if constants.BAKE_IMG_NAME in bpy.data.images:
+            bpy.data.images.remove(bpy.data.images[constants.BAKE_IMG_NAME])
+
     def execute(self, context):
         mat = utils.active_material(context)
         channel = mat.lp.channel_by_uid(self.channel)
@@ -86,6 +105,9 @@ class LP_OT_BakeCleanupChannel(bpy.types.Operator):
         if os.path.exists(path):
             img.save_render(os.path.join(path, f"{mat.name}_{channel.name}.{context.scene.render.image_settings.file_format.lower()}"))
 
+        # remove texture
+        self.remove_texture(mat.node_tree)
+
         utils.redraw()
         return {'FINISHED'}
 
@@ -99,17 +121,9 @@ class LP_OT_BakeFinish(bpy.types.Operator):
     def execute(self, context):
         global IS_BAKING
         IS_BAKING = False
-        
-        # remove bake image node
-        mat = utils.active_material(context)
-        if constants.BAKE_IMG_NODE in mat.node_tree.nodes:
-            mat.node_tree.nodes.remove(mat.node_tree.nodes[constants.BAKE_IMG_NODE])
-
-        # remove bake image
-        if constants.BAKE_IMG_NAME in bpy.data.images:
-            bpy.data.images.remove(bpy.data.images[constants.BAKE_IMG_NAME])
 
         # update viewport
+        mat = utils.active_material(context)
         mat.lp.selected_index = mat.lp.selected_index
         return {'FINISHED'}
 
@@ -166,13 +180,6 @@ class LP_OT_BakeChannelsModal(bpy.types.Operator):
 
         # set bake settings
         context.scene.render.bake.use_clear = False
-
-        # set up image in material
-        mat = utils.active_material(context)
-        tex = mat.node_tree.nodes.new(constants.NODES["TEX"])
-        tex.name = constants.BAKE_IMG_NODE
-        tex.image = utils_paint.create_image(constants.BAKE_IMG_NAME, context.scene.lp.export.resolution, context.scene.lp.export.base_color)
-        mat.node_tree.nodes.active = tex
 
         macro = get_macro()
 

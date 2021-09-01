@@ -1,5 +1,6 @@
 import bpy
-from .... import utils
+
+from .... import utils, constants
 
 
 # holds cached materials and inputs for faster repeated access
@@ -53,6 +54,15 @@ class LP_ChannelProperties(bpy.types.PropertyGroup):
                     return inp
 
         return None
+
+    @property
+    def is_data(self):
+        """ returns if this channel is a non color channel or not """
+        if self.inp.bl_idname == constants.SOCKETS["COLOR"]:
+            if self.inp.node.bl_idname in [constants.NODES["NORMAL"]]:
+                return True
+            return False
+        return True
 
 
     # reference to the uid of the material this channel is in
