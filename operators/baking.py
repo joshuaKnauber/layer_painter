@@ -41,7 +41,6 @@ class LP_OT_BakeSetupChannel(bpy.types.Operator):
     def execute(self, context):
         mat = utils.active_material(context)
         channel = mat.lp.channel_by_uid(self.channel)
-        channel.completed_bake = False
 
         # set up bake nodes
         emit = self.add_bake_setup(mat.node_tree)
@@ -179,6 +178,7 @@ class LP_OT_BakeChannelsModal(bpy.types.Operator):
 
         # set up all bake channels
         for channel in utils.active_material(context).lp.channels:
+            channel.completed_bake = False
             if channel.bake:
 
                 setup = macro.define('LP_OT_bake_setup_channel')
