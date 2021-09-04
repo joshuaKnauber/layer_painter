@@ -89,3 +89,7 @@ PCOLL_FILTER = "filters"
 # name for a layers layer filter node group
 def LAYER_FILTER_NAME(layer):
     return f".{layer.uid}_filters"
+
+
+# name for the rotate shortcut item
+ROTATE_KEY = "ROTATE_HDRI"

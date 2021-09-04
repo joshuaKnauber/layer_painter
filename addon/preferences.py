@@ -1,6 +1,8 @@
 import bpy
 import os
 
+from .. import keymaps, constants
+
 
 class LP_AddonPreferences(bpy.types.AddonPreferences):
 
@@ -60,6 +62,14 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
             self.draw_asset_group(box, "masks", asset_file["masks"], asset_file["uid"])
             self.draw_asset_group(box, "filters", asset_file["filters"], asset_file["uid"])
 
+    def draw_keymaps(self, layout):
+        row = layout.row()
+        row.prop(keymaps.get_shortcut(constants.ROTATE_KEY), "active", full_event=True, text="", toggle=False)
+        row.label(text="Rotate HDRI")
+        row = layout.row()
+        row.enabled = keymaps.get_shortcut(constants.ROTATE_KEY).active
+        row.prop(keymaps.get_shortcut(constants.ROTATE_KEY), "type", full_event=True, text="")
+
     def draw(self, context):
         layout = self.layout
 
@@ -71,7 +81,7 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
 
         # drawing the addon settings
         if self.pref_nav == "SETTINGS":
-            pass
+            self.draw_keymaps(layout)
 
         # drawing the asset settings
         elif self.pref_nav == "ASSETS":

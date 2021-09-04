@@ -14,7 +14,7 @@
 
 import bpy
 
-from . import handlers, addon, ui, data, operators
+from . import handlers, addon, ui, data, operators, keymaps
 
 
 bl_info = {
@@ -37,10 +37,12 @@ def register():
     addon.register()
     operators.register()
     ui.register()
+    keymaps.register()
 
 
 def unregister():
     ui.unregister()
+    keymaps.unregister()
     operators.unregister()
     addon.unregister()
     data.unregister()
