@@ -119,6 +119,9 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
 
     def get_channel_enabled(self, channel_uid):
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        if channel_uid == "LAYER":
+            return True
+        
         if self.layer_type == "FILL":
             return not layer_fill.get_channel_mix_node(self, channel_uid).mute
         elif self.layer_type == "PAINT":

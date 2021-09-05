@@ -77,15 +77,24 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 
     def draw_masks(self, layout, mat, layer):
+        enabled = layer.get_channel_enabled(mat.lp.channel)
+
         # draw mask add
         row = layout.row()
         row.scale_y = 1.2
-        split = row.split(factor=0.65)
+        split = row.split(factor=0.65 if enabled else 1)
         split.prop(mat.lp, "channel", text="")
-        split.operator("lp.add_mask", icon="ADD")
-        layout.separator()
+        
+        # draw channel not enabled warning
+        if not enabled:
+            layout.separator()
+            box = layout.box()
+            box.label(text=f"{mat.lp.channel_name} not enabled in layer", icon="INFO")
+        
+        else:
+            split.operator("lp.add_mask", icon="ADD")
+            layout.separator()
 
-        if mat.lp.channel:
             mask_groups = layer.get_mask_nodes(mat.lp.channel)
 
             if len(mask_groups) == 0:
@@ -130,15 +139,24 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                     utils_ui.draw_lp_group(box, layer.node.node_tree, group_node)
 
     def draw_filters(self, layout, mat, layer):
+        enabled = layer.get_channel_enabled(mat.lp.channel)
+
         # draw filter add
         row = layout.row()
         row.scale_y = 1.2
-        split = row.split(factor=0.65)
+        split = row.split(factor=0.65 if enabled else 1)
         split.prop(mat.lp, "channel", text="")
-        split.operator("lp.add_filter", icon="ADD")
-        layout.separator()
+        
+        # draw channel not enabled warning
+        if not enabled:
+            layout.separator()
+            box = layout.box()
+            box.label(text=f"{mat.lp.channel_name} not enabled in layer", icon="INFO")
+        
+        else:
+            split.operator("lp.add_filter", icon="ADD")
+            layout.separator()
 
-        if mat.lp.channel:
             filter_groups = layer.get_filter_nodes(mat.lp.channel)
 
             if len(filter_groups) == 0:
