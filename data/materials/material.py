@@ -27,7 +27,8 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
     def update_selected(self, context):
         """ called when a different layer is selected """
-        self.update_preview()
+        if self.selected:
+            self.update_preview()
 
     selected_index: bpy.props.IntProperty(name="Selected Layer",
                                     description="Index of the selected layer",
@@ -38,7 +39,9 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
     @property
     def selected(self):
         if self.selected_index < len(self.layers):
-            return self.layers[self.selected_index]
+            layer = self.layers[self.selected_index]
+            if layer.uid:
+                return layer
         return None
 
     @property
@@ -136,7 +139,7 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
         # count up position
         if len(self.layers) > 1:
-            self["selected_index"] += 1
+            self.selected_index += 1
 
         # initialize layer
         layer = self.layers[self.selected_index]
