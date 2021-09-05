@@ -57,7 +57,7 @@ def draw_texture_input(layout, tex_node, channel=None, ntree=None, name="", icon
         op.node_name = tex_node.name
         row.separator()
 
-    if bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == tex_node.image:
+    if tex_node and bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == tex_node.image:
         row.operator("lp.stop_painting", icon="CHECKMARK", text="Finish" if not icon_only else "")
     else:
         if channel:
