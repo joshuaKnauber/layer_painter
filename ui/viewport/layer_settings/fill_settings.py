@@ -60,7 +60,7 @@ def draw_fill_channel(layout, mat, layer, channel, channel_mix):
             else:
                 split.prop(value_node.inputs[0], "default_value", text="", slider=True)
 
-        utils_ui.draw_texture_input(split, value_node if data_type == "TEX" else None, channel=channel.uid)
+        utils_ui.draw_texture_input(split, value_node if data_type == "TEX" else None, ntree=layer.node.node_tree, channel=channel.uid, non_color=channel.is_data)
 
 
 def draw_mapping(layout, context, layer):

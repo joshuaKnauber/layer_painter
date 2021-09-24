@@ -37,6 +37,9 @@ class LP_OT_PaintChannel(bpy.types.Operator):
         return utils_operator.base_poll(context) and mat.lp.selected
 
     def execute(self, context):
+        mat = utils.active_material(context)
+        channel = mat.lp.channel_by_uid(self.channel)
+        
         # find tex node
         if self.channel:
             layer = utils.active_material(context).lp.selected
@@ -47,12 +50,12 @@ class LP_OT_PaintChannel(bpy.types.Operator):
 
         # create or get image
         if not tex.image:
-            img = utils_paint.create_image("image", self.resolution, self.color)
+            img = utils_paint.create_image("image", self.resolution, self.color, channel.is_data)
             tex.image = img
         else:
             img = tex.image
 
-        utils_paint.save_unsave_images()
+        utils_paint.save_all_unsaved()
         utils_paint.paint_image(img)
         return {"FINISHED"}
 
@@ -99,7 +102,7 @@ class LP_OT_StopPainting(bpy.types.Operator):
 
     def execute(self, context):
         bpy.ops.object.mode_set(mode='OBJECT')
-        utils_paint.save_unsave_images()
+        utils_paint.save_all_unsaved()
         return {"FINISHED"}
 
 

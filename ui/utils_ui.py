@@ -36,26 +36,40 @@ def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
             layout.template_curve_mapping(node, "mapping", type='COLOR')
 
 
-def draw_texture_input(layout, tex_node, channel=None, ntree=None, name="", icon_only=False, edit_mapping=False):
+def draw_texture_input(layout, tex_node, ntree, channel=None, name="", icon_only=False, edit_mapping=False, non_color=False):
     """ draws a row for the given tex node including the painting options """
     if tex_node:
         if name:
             if not tex_node.image:
-                layout.template_ID(tex_node, "image", new="image.new", open="image.open", text=name, live_icon=True)
+                row = layout.row(align=True)
+                row.template_ID(tex_node, "image", text=name, live_icon=True)
+                op = row.operator("lp.open_image", text="Open", icon="FILEBROWSER")
+                op.node = tex_node.name
+                op.node_tree = ntree.name
+                op.non_color = non_color
             else:
                 layout.template_ID(tex_node, "image", text=name, live_icon=True)
         else:
             if not tex_node.image:
-                layout.template_ID(tex_node, "image", new="image.new", open="image.open", live_icon=True)
+                row = layout.row(align=True)
+                row.template_ID(tex_node, "image", live_icon=True)
+                op = row.operator("lp.open_image", text="Open", icon="FILEBROWSER")
+                op.node = tex_node.name
+                op.node_tree = ntree.name
+                op.non_color = non_color
             else:
                 layout.template_ID(tex_node, "image", live_icon=True)
 
     row = layout.row(align=True)
-    if tex_node and tex_node.image and ntree and edit_mapping:
+    if tex_node and tex_node.image and edit_mapping:
         op = row.operator("lp.image_mapping", text="", icon="ORIENTATION_LOCAL")
         op.node_group = ntree.name
         op.node_name = tex_node.name
         row.separator()
+    
+    if tex_node and tex_node.image:
+        icon = "RESTRICT_COLOR_OFF" if tex_node.image.colorspace_settings.name == "Non-Color" else "RESTRICT_COLOR_ON"
+        row.prop(tex_node.image.colorspace_settings, "name", text="", icon=icon , icon_only=True)
 
     if tex_node and bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == tex_node.image:
         row.operator("lp.stop_painting", icon="CHECKMARK", text="Finish" if not icon_only else "")

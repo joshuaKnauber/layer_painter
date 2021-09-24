@@ -93,3 +93,7 @@ def LAYER_FILTER_NAME(layer):
 
 # name for the rotate shortcut item
 ROTATE_KEY = "ROTATE_HDRI"
+
+
+# name of the folder next to the blend file
+TEX_DIR_NAME = "LP Textures"
