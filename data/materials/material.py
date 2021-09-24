@@ -59,11 +59,11 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
     def channel_items(self, context):
         "returns the channels of this material as a list of enum items including the layer channel"
         amount = len(self.selected.get_mask_nodes("LAYER")) if context.scene.lp.layer_nav == "MASKS" else len(self.selected.get_filter_nodes("LAYER"))
-        items = [("LAYER", f"Layer ({amount})", "The entire layer, including all channels")]
+        items = [("LAYER", f"Layer ({amount} {context.scene.lp.layer_nav.title()})", "The entire layer, including all channels")]
         for channel in self.channels:
             if self.selected:
                 amount = len(self.selected.get_mask_nodes(channel.uid)) if context.scene.lp.layer_nav == "MASKS" else len(self.selected.get_filter_nodes(channel.uid))
-                name = f"{channel.name} ({'-' if not self.selected.get_channel_enabled(channel.uid) else amount})"
+                name = f"{channel.name} ({'Not Enabled' if not self.selected.get_channel_enabled(channel.uid) else str(amount) + ' ' +  context.scene.lp.layer_nav.title()})"
                 items.append( (channel.uid, name, channel.inp.name) )
         return items
 
