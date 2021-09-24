@@ -8,3 +8,6 @@ The goal here is to provide a workflow which makes the tools mentioned above unn
 # TODO
 - [ ] Set colorspace settings when loading and adding textures to channels
 - [ ] Add load images button for loading a set of PBR textures to a layer
+- [ ] Fix undo issues
+- [ ] Save opened and created images in folder next to blend file
+- [ ] Write README for contributors
