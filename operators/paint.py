@@ -10,7 +10,7 @@ class LP_OT_PaintChannel(bpy.types.Operator):
     bl_idname = "lp.paint_channel"
     bl_label = "Paint"
     bl_description = "Start painting on this channel"
-    bl_options = {"REGISTER", "INTERNAL"}
+    bl_options = {"REGISTER", "INTERNAL", "UNDO"}
 
     channel: bpy.props.StringProperty(options={"HIDDEN", "SKIP_SAVE"}, default="")
 
