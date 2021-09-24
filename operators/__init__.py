@@ -39,6 +39,7 @@ classes = (
     baking.LP_OT_BakeFinish,
     rotate_background.LP_OT_RotateBackground,
     images.LP_OT_OpenImage,
+    images.LP_OT_OpenImages,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 

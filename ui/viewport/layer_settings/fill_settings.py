@@ -5,8 +5,13 @@ from .... import constants
 from ....data.materials.layers.layer_types import layer_fill
 
 
-def draw_fill(layout, context, mat, layer):
+def draw_fill(layout, context, mat, layer):    
     draw_mapping(layout, context, layer)
+
+    layout.separator(factor=1)
+    row = layout.row(align=True)
+    row.scale_y = 1.15
+    row.operator("lp.open_images", text="Open PBR Set", icon="FILEBROWSER")
     layout.separator(factor=1)
     
     # channel settings

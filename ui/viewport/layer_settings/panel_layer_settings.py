@@ -52,7 +52,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 
                 # layer navigation
                 row = layout.row()
-                row.scale_y = 1.2
+                row.scale_y = 1.25
                 row.prop(context.scene.lp, "layer_nav", expand=True)
                 layout.separator(factor=1)
                 

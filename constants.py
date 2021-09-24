@@ -97,3 +97,36 @@ ROTATE_KEY = "ROTATE_HDRI"
 
 # name of the folder next to the blend file
 TEX_DIR_NAME = "LP Textures"
+
+
+# channel identifiers for importing textures
+CHANNEL_ABBR = [
+    {
+        "names": ["Color", "Base Color", "Albedo", "Diffuse"],
+        "abbr": ["col", "clr", "color", "base_color", "albedo", "dif", "diffuse"]
+    },
+    {
+        "names": ["Metallic", "Metalness"],
+        "abbr": ["met", "metal", "mtl", "metallic", "metalness"]
+    },
+    {
+        "names": ["Roughness"],
+        "abbr": ["roughness", "rgh"]
+    },
+    {
+        "names": ["Emission"],
+        "abbr": ["emission", "emit"]
+    },
+    {
+        "names": ["Alpha", "Transparency"],
+        "abbr": ["alpha", "alph", "transparency"]
+    },
+    {
+        "names": ["Normal"],
+        "abbr": ["normal", "nrml"]
+    },
+    {
+        "names": ["Height", "Bump"],
+        "abbr": ["height", "bump", "bmp"]
+    },
+]
