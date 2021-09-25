@@ -35,6 +35,7 @@ You can fix bugs, add your own feature ideas or other people ideas. If it's some
 - [ ] Other layer types (for example a paint only layer or a material layer)
 - [ ] PBR Texture assets
 - [ ] Brush assets for texture painting
+- [ ] Different channel presets for NPR, PBR, ...
 
 ## Changelog
 #### v1.0.0

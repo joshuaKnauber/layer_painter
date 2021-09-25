@@ -26,8 +26,8 @@ class LP_UL_Layers(bpy.types.UIList):
     
     def draw_layer(self, layout, layer):
         # layer hide
-        hide_icon = "HIDE_ON" if layer.node.mute else "HIDE_OFF"
-        layout.prop(layer.node, "mute", text="", invert_checkbox=True, icon=hide_icon, emboss=False)
+        hide_icon = "HIDE_OFF" if layer.visible else "HIDE_ON"
+        layout.prop(layer, "visible", text="", invert_checkbox=True, icon=hide_icon, emboss=False)
 
         # layer name
         split = layout.split(factor=0.7)

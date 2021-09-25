@@ -73,6 +73,18 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
                                        description="The type of this layer",
                                        items=[("FILL", "Fill", "Fill Layer"),
                                               ("PAINT", "Paint", "Paint Layer")])
+    
+    
+    def update_layer_visibility(self, context):
+        """ updates the opacity node of the layer """
+        node = self.get_layer_opacity_socket().node
+        node.inputs[2].default_value = (int(self.visible), int(self.visible), int(self.visible), 1)
+    
+    # controls the visibility of the layer
+    visible: bpy.props.BoolProperty(name="Visibility",
+                                       description="If this layer should be visible or not",
+                                       default=True,
+                                       update=update_layer_visibility)
 
 
     def init(self, ngroup, layer_type, mat_uid):
