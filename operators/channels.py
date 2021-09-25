@@ -59,13 +59,14 @@ class LP_OT_RemoveChannel(bpy.types.Operator):
         return utils_operator.base_poll(context)
 
     def execute(self, context):
+        mat = bpy.data.materials[self.material]
         if self.overwrite_uid:
-            bpy.data.materials[self.material].lp.remove_channel( self.overwrite_uid )
+            mat.lp.remove_channel( mat.lp.channel_by_uid(self.overwrite_uid) )
 
         else:
             inp = utils_operator.get_input(self.material, self.node, self.input)
             if inp:
-                bpy.data.materials[self.material].lp.remove_channel( inp )
+                mat.lp.remove_channel( mat.lp.channel_by_inp(inp) )
         utils.redraw()
         return {"FINISHED"}
 

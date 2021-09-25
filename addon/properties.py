@@ -8,6 +8,9 @@ from ..data.export.export import LP_BakeProperties
 from .. import constants
 
 
+_item_map = dict()
+
+
 class LP_AddonProperties(bpy.types.PropertyGroup):
 
     # navigation enum for the layer settings
@@ -38,12 +41,19 @@ class LP_AddonProperties(bpy.types.PropertyGroup):
         return asset_files
 
 
+    def __make_item(self, id_, name, descr, preview_id, uid):
+        """ function used to fix the issue where blender randomly switches up item names """
+        lookup = f"{str(id_)}\0{str(name)}\0{str(descr)}\0{str(preview_id)}\0{str(uid)}"
+        if not lookup in _item_map:
+            _item_map[lookup] = (id_, name, descr, preview_id, uid)
+        return _item_map[lookup]
+
     def __asset_items(self, name, property, offset=0):
         pcoll = get_pcoll(constants.PCOLL_MASK) if name=="mask" else get_pcoll(constants.PCOLL_FILTER)
 
         items = []
         for i, asset in enumerate(getattr(self, property)):
-            items.append( (str(i + offset), asset.name, asset.name, pcoll[asset.name].icon_id, i+offset) )
+            items.append( self.__make_item(str(i + offset), asset.name, asset.name, pcoll[asset.name].icon_id, i+offset) )
         return items
 
     def mask_items(self, context):

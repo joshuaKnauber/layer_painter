@@ -250,9 +250,8 @@ class LP_MaterialProperties(bpy.types.PropertyGroup):
 
 
     ### remove channel
-    def remove_channel(self, channel_uid):
+    def remove_channel(self, channel):
         """ removes the channel for the given input """
-        channel = self.channel_by_uid(channel_uid)
         index = self.channel_index(channel)
 
         channel.disable()

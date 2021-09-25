@@ -104,7 +104,7 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     def has_channel_input(self, channel_uid):
         """ returns if this layer has an input for the given channel uid """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
-        for out in enumerate(self.node.node_tree.nodes[constants.INPUT_NAME].outputs):
+        for out in self.node.node_tree.nodes[constants.INPUT_NAME].outputs:
             if hasattr(out, "uid") and out.uid == channel_uid:
                 return True
         return False
