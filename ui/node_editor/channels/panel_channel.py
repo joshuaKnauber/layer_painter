@@ -25,6 +25,8 @@ class LP_PT_Channels(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         mat = utils.active_material(context)
+        
+        layout.operator("lp.switch_to_viewport", icon="WINDOW", text="Go to viewport")
 
         col = layout.column(align=True)
         col.scale_y = 1.2
