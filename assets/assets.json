@@ -1,4 +1,15 @@
 {
     "files": [
+        {
+            "file_name": "LP mask assets.blend",
+            "uid": "8d1cd232d7",
+            "masks": [
+                {
+                    "name": "imag",
+                    "thumbnail": ""
+                }
+            ],
+            "filters": []
+        }
     ]
 }

@@ -31,9 +31,20 @@ def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
     # draw special nodes
     for node in group_node.node_tree.nodes:
         if node.bl_idname == constants.NODES["RAMP"] and not node.hide:
-            layout.template_color_ramp(node, "color_ramp", expand=False)
+            col = layout.column(align=True)
+            if node.label:
+                col.label(text=node.label+":")
+            col.template_color_ramp(node, "color_ramp", expand=False)
         elif node.bl_idname == constants.NODES["CURVES"] and not node.hide:
-            layout.template_curve_mapping(node, "mapping", type='COLOR')
+            col = layout.column(align=True)
+            if node.label:
+                col.label(text=node.label+":")
+            col.template_curve_mapping(node, "mapping", type='COLOR')
+        elif node.bl_idname == constants.NODES["TEX"] and not node.hide:
+            col = layout.column(align=True)
+            if node.label:
+                col.label(text=node.label+":")
+            col.template_ID(node, "image", new="image.new", open="image.open")
 
 
 def draw_texture_input(layout, tex_node, ntree, channel=None, name="", icon_only=False, edit_mapping=False, non_color=False):
