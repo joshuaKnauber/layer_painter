@@ -15,6 +15,6 @@ def register():
 
 def unregister():
     unreg_classes()
-    export.register()
+    export.unregister()
     materials.unregister()
     assets.unregister()
