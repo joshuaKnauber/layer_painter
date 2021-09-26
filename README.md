@@ -18,7 +18,7 @@ The discord server is used as the main place to share information and work regar
 WIP (This section will contain a written description on how to use the addon)
 
 ## Assets
-This section will contain a selection of assets for Layer Painter.
+- [Grunge Maps](https://drive.google.com/file/d/11sJSfT7jJohLHouMSQB5oc4GzUHtOifO/view)
 
 ## Tutorials
 This section will contain a selection of tutorials on the addon.
