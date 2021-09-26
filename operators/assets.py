@@ -164,8 +164,9 @@ def load_assets(context):
                 mask = context.scene.lp.mask_assets.add()
                 __assign_asset_data(mask, element, "MASK", f"{asset_file['uid']}.blend")
 
-                if element["thumbnail"] and os.path.exists(element["thumbnail"]):
-                    mask_pcoll.load(element["name"], element["thumbnail"], 'IMAGE')
+                thumb_path = os.path.join(constants.IMG_LOC, element["thumbnail"])
+                if element["thumbnail"] and os.path.exists(thumb_path):
+                    mask_pcoll.load(element["name"], thumb_path, 'IMAGE')
                 else:
                     mask_pcoll.load(element["name"], os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
             
@@ -173,8 +174,9 @@ def load_assets(context):
                 filter = context.scene.lp.filter_assets.add()
                 __assign_asset_data(filter, element, "FILTER", f"{asset_file['uid']}.blend")
 
-                if element["thumbnail"] and os.path.exists(element["thumbnail"]):
-                    filter_pcoll.load(element["name"], element["thumbnail"], 'IMAGE')
+                thumb_path = os.path.join(constants.IMG_LOC, element["thumbnail"])
+                if element["thumbnail"] and os.path.exists(thumb_path):
+                    filter_pcoll.load(element["name"], thumb_path, 'IMAGE')
                 else:
                     filter_pcoll.load(element["name"], os.path.join(constants.ICON_LOC, "no_ico.jpg"), 'IMAGE')
 
@@ -280,7 +282,7 @@ class LP_OT_LoadThumbnail(bpy.types.Operator, ImportHelper):
                     if item["name"] == self.name:
                         dst = os.path.join(constants.IMG_LOC, os.path.basename(self.filepath))
                         copyfile(bpy.path.abspath(self.filepath), dst)
-                        item["thumbnail"] = dst
+                        item["thumbnail"] = os.path.basename(dst)
                         break
 
                 asset_file.seek(0)
@@ -306,7 +308,7 @@ class LP_OT_LoadThumbnails(bpy.types.Operator, ImportHelper):
                     img_path = os.path.join(directory, name)
                     dst = os.path.join(constants.IMG_LOC, os.path.basename(img_path))
                     copyfile(img_path, dst)
-                    item["thumbnail"] = dst
+                    item["thumbnail"] = os.path.basename(dst)
     
     def execute(self, context):
         # load thumbnails

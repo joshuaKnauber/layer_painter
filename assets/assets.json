@@ -1,4 +1,122 @@
 {
     "files": [
+        {
+            "file_name": "Mask Basics.blend",
+            "uid": "mask_basics",
+            "masks": [
+                {
+                    "name": "Spots",
+                    "thumbnail": "Spots.jpg"
+                },
+                {
+                    "name": "Scratches",
+                    "thumbnail": "Scratches.jpg"
+                },
+                {
+                    "name": "Object Random",
+                    "thumbnail": "Object Random.jpg"
+                },
+                {
+                    "name": "Image Texture",
+                    "thumbnail": "Image Texture.jpg"
+                },
+                {
+                    "name": "Image Lite",
+                    "thumbnail": "Image Lite.png"
+                },
+                {
+                    "name": "ID Mask",
+                    "thumbnail": "ID Mask.jpg"
+                },
+                {
+                    "name": "Heavy Damage",
+                    "thumbnail": "Heavy Damage.jpg"
+                },
+                {
+                    "name": "Gradient Position",
+                    "thumbnail": "Gradient Position.jpg"
+                },
+                {
+                    "name": "Fingerprints",
+                    "thumbnail": "Fingerprints.jpg"
+                },
+                {
+                    "name": "Dust",
+                    "thumbnail": "Dust.jpg"
+                },
+                {
+                    "name": "Droplets Big",
+                    "thumbnail": "Droplets Big.jpg"
+                },
+                {
+                    "name": "Droplets",
+                    "thumbnail": "Droplets.jpg"
+                },
+                {
+                    "name": "Damage",
+                    "thumbnail": "Damage.jpg"
+                },
+                {
+                    "name": "Cracks Detailed",
+                    "thumbnail": "Cracks Detailed.jpg"
+                },
+                {
+                    "name": "Cracks",
+                    "thumbnail": "Cracks.jpg"
+                },
+                {
+                    "name": "Checker",
+                    "thumbnail": "Checker.jpg"
+                },
+                {
+                    "name": "Cells",
+                    "thumbnail": "Cells.jpg"
+                }
+            ],
+            "filters": []
+        },
+        {
+            "file_name": "Filters Basic.blend",
+            "uid": "filter_basics",
+            "masks": [],
+            "filters": [
+                {
+                    "name": "RGB Curves",
+                    "thumbnail": "RGB Curves.jpg"
+                },
+                {
+                    "name": "Mix Color",
+                    "thumbnail": "Mix Color.png"
+                },
+                {
+                    "name": "Map Range",
+                    "thumbnail": "Map Range.jpg"
+                },
+                {
+                    "name": "Invert",
+                    "thumbnail": "Invert.jpg"
+                },
+                {
+                    "name": "HSV",
+                    "thumbnail": "HSV.jpg"
+                },
+                {
+                    "name": "Gamma",
+                    "thumbnail": "Gamma.png"
+                },
+                {
+                    "name": "Color Ramp",
+                    "thumbnail": "Color Ramp.jpg"
+                },
+                {
+                    "name": "Clamp",
+                    "thumbnail": "Clamp.png"
+                },
+                {
+                    "name": "Bright Contrast",
+                    "thumbnail": "Bright Contrast.jpg"
+                }
+            ]
+        }
     ]
 }

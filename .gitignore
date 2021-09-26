@@ -1,4 +1,8 @@
 __pycache__/
 *.pyc
+
 *.blend1
+
 assets/files/*.blend
+!assets/files/filter_basics.blend
+!assets/files/mask_basics.blend

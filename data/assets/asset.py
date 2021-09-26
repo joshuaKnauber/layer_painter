@@ -15,6 +15,3 @@ class LP_AssetProperties(bpy.types.PropertyGroup):
     thumbnail: bpy.props.StringProperty(name="Thumbnail",
                                     description="Thumbnail for this asset",
                                     subtype="FILE_PATH")
-    
-    
-    
