@@ -81,6 +81,13 @@ class LP_AddonPreferences(bpy.types.AddonPreferences):
 
         # drawing the addon settings
         if self.pref_nav == "SETTINGS":
+            box = layout.box()
+            box.label(text="If you're interested in contributing to this addon join the server:", icon="FUND")
+            row = box.row()
+            row.scale_y = 1.2
+            row.operator("wm.url_open", text="Discord Server", icon="URL").url = "https://discord.com/invite/s9dawzV5JU"
+            layout.separator()
+            layout.label(text="Settings:")
             self.draw_keymaps(layout)
 
         # drawing the asset settings
