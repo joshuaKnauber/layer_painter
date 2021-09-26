@@ -39,3 +39,4 @@ You can fix bugs, add your own feature ideas or other people ideas. If it's some
 
 ## Changelog
 #### v1.0.0
+- Initial release
