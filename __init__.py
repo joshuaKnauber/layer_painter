@@ -30,6 +30,15 @@ bl_info = {
 }
 
 
+def run_until_context():
+    # NOTE (by Joshua) there's probably a better solution for this
+    # this runs after the script is loaded until there's context for loading assets after install
+    if type(bpy.context) != bpy.types.Context:
+        return 1
+    operators.assets.load_assets(bpy.context)
+    return None
+
+
 def register():
     handlers.register()
     data.register()
@@ -37,6 +46,7 @@ def register():
     operators.register()
     ui.register()
     keymaps.register()
+    bpy.app.timers.register(run_until_context)
 
 
 def unregister():
