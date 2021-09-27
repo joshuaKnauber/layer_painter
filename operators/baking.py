@@ -7,6 +7,7 @@ from .. import utils, constants
 
 
 IS_BAKING = False
+TIMER = None
 
 def is_baking():
     global IS_BAKING
@@ -121,6 +122,11 @@ class LP_OT_BakeFinish(bpy.types.Operator):
     def execute(self, context):
         global IS_BAKING
         IS_BAKING = False
+        
+        global TIMER
+        if TIMER:
+            bpy.context.window_manager.event_timer_remove(TIMER)
+            TIMER = None
 
         # update viewport
         mat = utils.active_material(context)
@@ -151,6 +157,7 @@ def get_macro():
 class LP_OT_BakeChannelsModal(bpy.types.Operator):
     bl_idname = "lp.bake_modal"
     bl_label = "Bake Modal"
+    bl_description= "Bakes the selected channels for the selected objects"
 
 
     def modal(self, context, event):
@@ -198,6 +205,9 @@ class LP_OT_BakeChannelsModal(bpy.types.Operator):
                 clean.properties.channel = channel.uid
 
         macro.define('LP_OT_bake_finish')
+
+        global TIMER
+        TIMER = bpy.context.window_manager.event_timer_add(1, window=bpy.context.window)
 
         bpy.ops.lp.bake_macro('INVOKE_DEFAULT')
 
