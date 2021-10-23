@@ -8,6 +8,7 @@ NODES = {
     "COORDS":   "ShaderNodeTexCoord",
     "PRINC":    "ShaderNodeBsdfPrincipled",
     "MIX":      "ShaderNodeMixRGB",
+    "VALUE":    "ShaderNodeValue",
     "RGB":      "ShaderNodeRGB",
     "OUT":      "ShaderNodeOutputMaterial",
     "NORMAL":   "ShaderNodeNormalMap",

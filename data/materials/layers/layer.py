@@ -77,8 +77,8 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
     
     def update_layer_visibility(self, context):
         """ updates the opacity node of the layer """
-        node = self.get_layer_opacity_socket().node
-        node.inputs[2].default_value = (int(self.visible), int(self.visible), int(self.visible), 1)
+        node = self.get_layer_visibility_node()
+        node.mute = self.visible
     
     # controls the visibility of the layer
     visible: bpy.props.BoolProperty(name="Visibility",
@@ -145,6 +145,16 @@ class LP_LayerProperties(bpy.types.PropertyGroup):
         """ returns this layers opacity node socket """
         if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
         return self.node.node_tree.nodes[constants.OPAC_NAME].inputs[0]
+
+    def get_layer_visibility_node(self):
+        """ returns this layers visibility node """
+        if not self.node: raise f"Couldn't find layer node for '{self.name}'. Delete the layer to proceed."
+        opac_socket = self.get_layer_opacity_socket()
+        if not opac_socket.is_linked: # making sure the visibility node exists for files created before v2.0.1
+            val = self.node.node_tree.nodes.new(constants.NODES["VALUE"])
+            val.outputs[0].default_value = 0
+            self.node.node_tree.links.new(val.outputs[0], opac_socket)
+        return opac_socket.links[0].from_node
 
     def get_mask_input(self, channel):
         """ returns the input for the given channel uid or 'LAYER' """
