@@ -73,14 +73,15 @@ def draw_texture_input(layout, tex_node, ntree, channel=None, name="", icon_only
 
     row = layout.row(align=True)
     if tex_node and tex_node.image and edit_mapping:
-        op = row.operator("lp.image_mapping", text="", icon="ORIENTATION_LOCAL")
+        op = row.operator("lp.image_props", text="",icon="MOD_UVPROJECT")
         op.node_group = ntree.name
         op.node_name = tex_node.name
-        row.separator()
-    
-    if tex_node and tex_node.image:
-        icon = "RESTRICT_COLOR_OFF" if tex_node.image.colorspace_settings.name == "Non-Color" else "RESTRICT_COLOR_ON"
-        row.prop(tex_node.image.colorspace_settings, "name", text="", icon=icon , icon_only=True)
+        op.use_mapping = True
+    elif tex_node and tex_node.image and not edit_mapping:
+        op = row.operator("lp.image_props", text="",icon="MOD_UVPROJECT")
+        op.node_group = ntree.name
+        op.node_name = tex_node.name
+        op.use_mapping = False
 
     if tex_node and bpy.context.mode == "PAINT_TEXTURE" and bpy.context.scene.tool_settings.image_paint.canvas == tex_node.image:
         row.operator("lp.stop_painting", icon="CHECKMARK", text="Finish" if not icon_only else "")
