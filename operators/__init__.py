@@ -1,5 +1,5 @@
 import bpy
-from . import layers, channels, presets, interface, assets, masks, filters, paint, baking, rotate_background, images
+from . import layers, channels, presets, interface, assets, masks, filters, paint, baking, rotate_background, images, image_props
 
 
 classes = (
@@ -33,7 +33,6 @@ classes = (
     paint.LP_OT_PaintChannel,
     paint.LP_OT_StopPainting,
     paint.LP_OT_ToggleTexture,
-    paint.LP_OT_ImageMapping,
     baking.LP_OT_BakeChannelsModal,
     baking.LP_OT_BakeSetupChannel,
     baking.LP_OT_BakeCleanupChannel,
@@ -41,6 +40,7 @@ classes = (
     rotate_background.LP_OT_RotateBackground,
     images.LP_OT_OpenImage,
     images.LP_OT_OpenImages,
+    image_props.LP_OT_ImageProps,
 )
 reg_classes, unreg_classes = bpy.utils.register_classes_factory(classes)
 
