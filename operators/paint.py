@@ -50,8 +50,13 @@ class LP_OT_PaintChannel(bpy.types.Operator):
 
         # create or get image
         if not tex.image:
-            img = utils_paint.create_image("image", self.resolution, self.color, channel.is_data)
-            tex.image = img
+            # Blanchsb code fix Dec2021: Painting masks throws error #17
+            if self.channel:
+                img = utils_paint.create_image("image", self.resolution, self.color, channel.is_data)
+                tex.image = img
+            else:
+                img = utils_paint.create_image("image", self.resolution, (0,0,0,1), False)
+                tex.image = img
         else:
             img = tex.image
 
@@ -65,7 +70,9 @@ class LP_OT_PaintChannel(bpy.types.Operator):
         layout.use_property_decorate = False
 
         layout.prop(self, "resolution")
-        layout.prop(self, "color")
+        # Blanchsb code fix Dec2021: Painting masks throws error #17
+        if self.channel:
+            layout.prop(self, "color")
 
     def invoke(self, context, event):
         # find tex node
