@@ -61,6 +61,14 @@ class LP_OT_ImageProps(bpy.types.Operator):
 
         row = layout.row()
         row.enabled = False
+        row.label(text="Interpolation")
+
+        row = layout.row()
+        row.prop(tex, "interpolation", text="")
+        row.separator()
+
+        row = layout.row()
+        row.enabled = False
         row.label(text="Extension")
 
         row = layout.row()
