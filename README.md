@@ -38,5 +38,5 @@ You can fix bugs, add your own feature ideas or other people ideas. If it's some
 - [ ] Different channel presets for NPR, PBR, ...
 
 ## Changelog
-#### v1.0.0
+#### v2.0.0
 - Initial release
