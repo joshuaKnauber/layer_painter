@@ -1,5 +1,5 @@
 import bpy
-from .. import constants
+from .. import utils, constants
 
 
 def base_poll(context):
@@ -17,7 +17,11 @@ def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
             # draw convert to texture input for color sockets
             if inp.bl_idname == constants.SOCKETS["COLOR"]:
                 op = row.operator("lp.toggle_texture", text="", emboss=False, icon="SHADING_RENDERED" if len(inp.links) == 0 else "SHADING_TEXTURE")
-                op.node_group = ntree.name
+                if bpy.context.scene.lp.layer_nav == "FILTERS":
+                    ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(bpy.context.active_object.active_material.lp.selected)]
+                    op.node_group = ntree.name
+                else:
+                    op.node_group = ntree.name
                 op.node_name = group_node.name
                 op.input_index = i
                 row.separator()
