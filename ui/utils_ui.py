@@ -1,5 +1,5 @@
 import bpy
-from .. import utils, constants
+from .. import constants
 
 
 def base_poll(context):
