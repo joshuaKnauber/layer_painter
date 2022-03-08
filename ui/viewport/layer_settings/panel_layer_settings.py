@@ -136,7 +136,7 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
 
                 # draw group inputs
                 if not group_node.hide:
-                    utils_ui.draw_lp_group(box, layer.node.node_tree, group_node)
+                    utils_ui.draw_lp_group(box, layer.node.node_tree, group_node, mat, layer)
 
     def draw_filters(self, layout, mat, layer):
         enabled = layer.get_channel_enabled(mat.lp.channel)
@@ -193,6 +193,6 @@ class LP_PT_LayerSettingsPanel(bpy.types.Panel):
                 # draw group inputs
                 if not group_node.hide:
                     if mat.lp.channel == "LAYER":
-                        utils_ui.draw_lp_group(box, layer.node.node_tree, group_node)
+                        utils_ui.draw_lp_group(box, layer.node.node_tree, group_node, mat, layer)
                     else:
-                        utils_ui.draw_lp_group(box, bpy.data.node_groups[constants.LAYER_FILTER_NAME(layer)], group_node)
+                        utils_ui.draw_lp_group(box, bpy.data.node_groups[constants.LAYER_FILTER_NAME(layer)], group_node, mat, layer)

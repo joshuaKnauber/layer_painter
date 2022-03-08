@@ -7,7 +7,7 @@ def base_poll(context):
     return context.active_object and context.active_object.type == "MESH"
 
 
-def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
+def draw_lp_group(layout, ntree, group_node, mat, layer, inp_offset = 1):
     """ draws the given node group as an lp group, for example a mask """
     # draw all inputs
     for i, inp in enumerate(group_node.inputs):
@@ -17,7 +17,14 @@ def draw_lp_group(layout, ntree, group_node, inp_offset = 1):
             # draw convert to texture input for color sockets
             if inp.bl_idname == constants.SOCKETS["COLOR"]:
                 op = row.operator("lp.toggle_texture", text="", emboss=False, icon="SHADING_RENDERED" if len(inp.links) == 0 else "SHADING_TEXTURE")
-                op.node_group = ntree.name
+                if mat.lp.channel == "LAYER" and bpy.context.scene.lp.layer_nav == "FILTERS":
+                    ntree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(layer)]
+                    op.node_group = ntree.name
+                elif mat.lp.channel != "LAYER" and bpy.context.scene.lp.layer_nav == "FILTERS":
+                    ntree = layer.node.node_tree
+                    op.node_group = ntree.name
+                else:
+                    op.node_group = ntree.name
                 op.node_name = group_node.name
                 op.input_index = i
                 row.separator()
