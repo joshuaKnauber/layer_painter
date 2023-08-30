@@ -79,7 +79,7 @@ class LP_OT_ProcessFile(bpy.types.Operator):
             for name in data_from.node_groups:
                 item = self.groups.add()
                 item.name = name
-        return context.window_manager.invoke_props_dialog(self, width=350)
+        return context.window_manager.invoke_props_dialog(self, width=600)
 
     def build_file_data(self):
         # build data from groups
