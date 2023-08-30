@@ -117,6 +117,72 @@
                     "thumbnail": "Bright Contrast.jpg"
                 }
             ]
+        },
+        {
+            "file_name": "Geometry_Based_Masks.blend",
+            "uid": "Geometry_Based_Masks",
+            "masks": [
+                {
+                    "name": "Edge Mask - Pointiness C",
+                    "thumbnail": "Edge Mask - Pointiness C.png"
+                },
+                {
+                    "name": "Edge and Corner Mask - Bevel C",
+                    "thumbnail": "Edge and Corner Mask - Bevel C.png"
+                },
+                {
+                    "name": "Cavity, Crevice, Inner Corner Mask - AO",
+                    "thumbnail": "Cavity, Crevice, Inner Corner Mask - AO.png"
+                }
+            ],
+            "filters": []
+        },
+        {
+            "file_name": "Procedural_Noise_Masks.blend",
+            "uid": "Procedural_Noise_Masks",
+            "masks": [
+                {
+                    "name": "Spline Noise",
+                    "thumbnail": "Spline Noise.png"
+                },
+                {
+                    "name": "Smudged Dirt",
+                    "thumbnail": "Smudged Dirt.png"
+                },
+                {
+                    "name": "Rust Patches",
+                    "thumbnail": "Rust Patches.png"
+                },
+                {
+                    "name": "Noisy Lines",
+                    "thumbnail": "Noisy Lines.png"
+                },
+                {
+                    "name": "Gneiss, Malachite, Agate",
+                    "thumbnail": "Gneiss, Malachite, Agate.png"
+                },
+                {
+                    "name": "Dusty",
+                    "thumbnail": "Dusty.png"
+                },
+                {
+                    "name": "Distorted Spots",
+                    "thumbnail": "Distorted Spots.png"
+                },
+                {
+                    "name": "Dirt Spots",
+                    "thumbnail": "Dirt Spots.png"
+                },
+                {
+                    "name": "Dirt",
+                    "thumbnail": "Dirt.png"
+                },
+                {
+                    "name": "Concrete, Marble",
+                    "thumbnail": "Concrete, Marble.png"
+                }
+            ],
+            "filters": []
         }
     ]
 }
