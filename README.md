@@ -46,5 +46,5 @@ You can fix bugs, add your own feature ideas or other people ideas. If it's some
 #### v2.0.2
  - Added 2, Cycles Only, Edge/Cavity Mask: 'Edge and Corner Mask - Bevel C', 'Edge Mask Pointiness C' 
  - Added 1, Eevee and Cycles Edge/Cavity Mask:'Cavity, Crevice, Innercorner Mask - from AO'
- - Added 10 new Procedural Grunge Masks for Eevee and Cycles "Assorted Noise-Based Masks, Cycles": 'Gneiss, Malachite, Agate', 'Rust', 'Concrete/Marble', 'Dusty, 'Dirt, 'Smuged Dirt', 'Dirt Spots', 'Distorted Spots', 'Spline Noise', 'Noisy Lines'
+ - Added 10 new Procedural Grunge Masks for Eevee and Cycles "Procedural Noise Masks": 'Gneiss, Malachite, Agate', 'Rust', 'Concrete/Marble', 'Dusty, 'Dirt, 'Smuged Dirt', 'Dirt Spots', 'Distorted Spots', 'Spline Noise', 'Noisy Lines'
 - Note: Masks appended with C are Cycles only. 
