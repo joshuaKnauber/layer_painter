@@ -23,7 +23,7 @@ bl_info = {
     "additonal contributions by": "Hunanbean-Collective, E. Woodford, R. Brown, S. Charan, A. Eldien",
     "description": "Layer based texture painting inside blender",
     "blender": (3, 5, 0),
-    "version": (2, 0, 2),
+    "version": (2, 0, 1),
     "location": "View3D > N-Panel > Layer Painter",
     "category": "Material",
     "wiki_url": "https://github.com/joshuaKnauber/layer_painter",
