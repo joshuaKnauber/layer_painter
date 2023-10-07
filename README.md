@@ -8,20 +8,22 @@ The goal here is to provide a workflow which makes the tools mentioned above unn
 The discord server is used as the main place to share information and work regarding the addon. You can join it to ask questions and get more information about contributing.
 
 ## Overview
-- [Addon](#Addon)
-- [Assets](#Assets)
-- [Tutorials](#Tutorials)
-- [Contributors](#Contributors)
-- [Changelog](#Changelog)
+- [Addon](#addon)
+- [Additional Assets](#additional-assets)
+- [Tutorials](#tutorials)
+- [Contributors](#contributors)
+- [Changelog](#changelog)
 
 ## Addon
 WIP (This section will contain a written description on how to use the addon)
 
-## Assets
-- [Grunge Maps](https://drive.google.com/file/d/11sJSfT7jJohLHouMSQB5oc4GzUHtOifO/view)
+## Additional Assets
+- [Texture Based Grunge Maps by BongoCat - Already Included](https://drive.google.com/file/d/11sJSfT7jJohLHouMSQB5oc4GzUHtOifO/view)
 
 ## Tutorials
-This section will contain a selection of tutorials on the addon.
+[Layer Painter 2, Complete Tutorial and free scene by blanchsb](https://www.youtube.com/watch?v=YDt9LFbjJU4)
+
+[Layer Painter 2, Materials and Asset Browser Tutorial by blanchsb](https://www.youtube.com/watch?v=glMGVkGhtAg)
 
 ## Contributors
 This addon is maintained by contributors. This most importantly includes contributions for code but also for assets like masks and filters and tutorials. If you're interested in contributing any of these, just open a pull request for adding them yourself or join the discord server and ask for more information.
@@ -40,3 +42,8 @@ You can fix bugs, add your own feature ideas or other people ideas. If it's some
 ## Changelog
 #### v2.0.0
 - Initial release
+
+#### v2.0.1
+ - Added 2, Cycles Only, Edge/Cavity Mask: 'Edge and Corner Mask - Bevel', 'Edge Mask Pointiness' 
+ - Added 1, Eevee and Cycles Edge/Cavity Mask:'Cavity, Crevice, Innercorner Mask - from AO'
+ - Added 10 new Procedural Grunge Masks for Eevee and Cycles "Procedural Noise Masks": 'Gneiss, Malachite, Agate', 'Rust', 'Concrete/Marble', 'Dusty, 'Dirt, 'Smuged Dirt', 'Dirt Spots', 'Distorted Spots', 'Spline Noise', 'Noisy Lines'

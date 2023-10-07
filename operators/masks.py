@@ -37,7 +37,7 @@ class LP_OT_AddMask(bpy.types.Operator):
         if len(context.scene.lp.mask_assets) + len(context.scene.lp.filter_assets) > 0:
             box = layout.box()
             col = box.column(align=True)
-            col.template_icon_view(context.scene.lp, "masks", show_labels=True, scale=7)
+            col.template_icon_view(context.scene.lp, "masks", show_labels=True, scale=7, scale_popup=7)
             row = col.row()
             row.label(text=self.get_selected_asset(context).name)
         else:
