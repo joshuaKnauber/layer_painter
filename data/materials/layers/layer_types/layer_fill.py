@@ -5,10 +5,12 @@ from .....data import utils_nodes
 
 
 def setup_channel_nodes(layer, channel, endpoints):
-    """ creates the nodes for the given channel in the form of a fill layer """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    if not channel.inp: raise f"Couldn't find input for channel '{channel.name}'. Delete channel to proceed."
-    
+    """creates the nodes for the given channel in the form of a fill layer"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    if not channel.inp:
+        raise f"Couldn't find input for channel '{channel.name}'. Delete channel to proceed."
+
     # add channel mix and opacity
     mix = __add_channel_mix(layer, channel, endpoints)
     _, _ = __add_channel_opacity(layer, mix)
@@ -23,43 +25,64 @@ def setup_channel_nodes(layer, channel, endpoints):
 
 
 def remove_channel_nodes(layer, channel_uid):
-    """ removes the endpoints and channel nodes from the given layer """
+    """removes the endpoints and channel nodes from the given layer"""
     # remove channel nodes
     __remove_layer_channel_nodes(layer, channel_uid)
 
     # remove channel endpoints
     inp_index, out_index = layer.get_channel_endpoint_indices(channel_uid)
-    layer.node.node_tree.inputs.remove(layer.node.node_tree.inputs[inp_index])
-    layer.node.node_tree.outputs.remove(layer.node.node_tree.outputs[out_index])
+    layer.node.node_tree.interface.remove(
+        layer.node.node_tree.interface.inputs[inp_index]
+    )
+    layer.node.node_tree.interface.remove(
+        layer.node.node_tree.interface.outputs[out_index]
+    )
 
 
 def get_channel_mix_node(layer, channel_uid):
-    """ returns the mix node for the given layer and channel """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    """returns the mix node for the given layer and channel"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
     return layer.node.node_tree.nodes[channel_uid]
 
 
 def get_channel_tex_alpha_socket(layer, channel_uid):
-    """ returns the texture alpha nodes socket for the given channel uid """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_mix_node(layer, channel_uid).inputs[0].links[0].from_node.inputs[0]
+    """returns the texture alpha nodes socket for the given channel uid"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return (
+        get_channel_mix_node(layer, channel_uid).inputs[0].links[0].from_node.inputs[0]
+    )
 
 
 def get_channel_mask_socket(layer, channel_uid):
-    """ returns the mask nodes socket for the given channel uid """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_tex_alpha_socket(layer, channel_uid).node.inputs[2].links[0].from_node.inputs[2]
+    """returns the mask nodes socket for the given channel uid"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return (
+        get_channel_tex_alpha_socket(layer, channel_uid)
+        .node.inputs[2]
+        .links[0]
+        .from_node.inputs[2]
+    )
 
 
 def get_channel_opacity_socket(layer, channel_uid):
-    """ returns the opacity nodes socket for the given channel uid """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_mask_socket(layer, channel_uid).node.inputs[0].links[0].from_node.inputs[0]
+    """returns the opacity nodes socket for the given channel uid"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return (
+        get_channel_mask_socket(layer, channel_uid)
+        .node.inputs[0]
+        .links[0]
+        .from_node.inputs[0]
+    )
 
 
 def get_channel_value_node(layer, channel_uid):
-    """ returns the node storing the value for the given channel uid """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    """returns the node storing the value for the given channel uid"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
     node = get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node
     while node.bl_idname == constants.NODES["GROUP"]:
         node = node.inputs[0].links[0].from_node
@@ -67,13 +90,16 @@ def get_channel_value_node(layer, channel_uid):
 
 
 def get_channel_filter_socket(layer, channel_uid):
-    """ returns the filter socket for the given channel uid """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    return get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node.inputs[0]
+    """returns the filter socket for the given channel uid"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    return (
+        get_channel_mix_node(layer, channel_uid).inputs[2].links[0].from_node.inputs[0]
+    )
 
 
 def get_channel_texture_nodes(layer, channel_uid):
-    """ returns the texture nodes for the given channel. Returns None, None, None if the channel data type is not TEX """
+    """returns the texture nodes for the given channel. Returns None, None, None if the channel data type is not TEX"""
     if get_channel_data_type(layer, channel_uid) == "TEX":
         tex = get_channel_value_node(layer, channel_uid)
         mapp = tex.inputs[0].links[0].from_node
@@ -84,8 +110,8 @@ def get_channel_texture_nodes(layer, channel_uid):
 
 
 def get_channel_data_type(layer, channel_uid):
-    """ returns the type of data that this channel is set to for this layer
-        return in ("COL", "TEX")
+    """returns the type of data that this channel is set to for this layer
+    return in ("COL", "TEX")
     """
     node = get_channel_value_node(layer, channel_uid)
 
@@ -97,9 +123,10 @@ def get_channel_data_type(layer, channel_uid):
 
 
 def cycle_channel_data_type(layer, channel_uid):
-    """ cycles the type of data this channel is set to in ("COL", "TEX") """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
-    
+    """cycles the type of data this channel is set to in ("COL", "TEX")"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+
     data_type = get_channel_data_type(layer, channel_uid)
     node = get_channel_value_node(layer, channel_uid)
     channel = layer.mat.lp.channel_by_uid(channel_uid)
@@ -112,7 +139,9 @@ def cycle_channel_data_type(layer, channel_uid):
     if data_type == "COL":
         tex = __setup_node_texture(layer, channel)
         layer.node.node_tree.links.new(tex.outputs[0], connect_socket)
-        layer.node.node_tree.links.new(tex.outputs[1], get_channel_tex_alpha_socket(layer, channel_uid))
+        layer.node.node_tree.links.new(
+            tex.outputs[1], get_channel_tex_alpha_socket(layer, channel_uid)
+        )
         layer.update_texture_mapping()
 
     # cycle to COL
@@ -122,8 +151,9 @@ def cycle_channel_data_type(layer, channel_uid):
 
 
 def set_channel_data_type(layer, channel_uid, to_type):
-    """ sets the channel data type to the given type in ("COL", "TEX") """
-    if not layer.node: raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
+    """sets the channel data type to the given type in ("COL", "TEX")"""
+    if not layer.node:
+        raise f"Couldn't find layer node for '{layer.name}'. Delete layer to proceed."
 
     data_type = get_channel_data_type(layer, channel_uid)
     if data_type != to_type:
@@ -131,7 +161,7 @@ def set_channel_data_type(layer, channel_uid, to_type):
 
 
 def __add_channel_mix(layer, channel, endpoints):
-    """ adds the mix node representing the starting point for the given channel in this layer """
+    """adds the mix node representing the starting point for the given channel in this layer"""
     # add mix node
     mix = layer.node.node_tree.nodes.new(constants.NODES["MIX"])
     mix.name = channel.uid
@@ -147,14 +177,14 @@ def __add_channel_mix(layer, channel, endpoints):
 
 
 def __add_layer_filter(layer, mix):
-    """ adds a node group and assigns the layer filter group """
+    """adds a node group and assigns the layer filter group"""
     node = layer.node.node_tree.nodes.new(constants.NODES["GROUP"])
     node.node_tree = bpy.data.node_groups[constants.LAYER_FILTER_NAME(layer)]
     return node
 
 
 def __add_channel_opacity(layer, mix):
-    """ adds the node controlling the opacity for the given channel node """
+    """adds the node controlling the opacity for the given channel node"""
     # add mask node
     mask = layer.node.node_tree.nodes.new(constants.NODES["MIX"])
     mask.label = "Channel Mask"
@@ -180,13 +210,15 @@ def __add_channel_opacity(layer, mix):
     layer.node.node_tree.links.new(opacity.outputs[0], mask.inputs[0])
     layer.node.node_tree.links.new(mask.outputs[0], tex_alpha.inputs[2])
     layer.node.node_tree.links.new(tex_alpha.outputs[0], mix.inputs[0])
-    layer.node.node_tree.links.new(layer.node.node_tree.nodes[constants.OPAC_NAME].outputs[0], opacity.inputs[2])
+    layer.node.node_tree.links.new(
+        layer.node.node_tree.nodes[constants.OPAC_NAME].outputs[0], opacity.inputs[2]
+    )
 
     return opacity, tex_alpha
 
 
 def __setup_node_value(layer, channel):
-    """ setup the value node for the fill layer """
+    """setup the value node for the fill layer"""
     # set up value node for value channels
     if type(channel.inp.default_value) == float:
         value = layer.node.node_tree.nodes.new(constants.NODES["MIX"])
@@ -198,26 +230,26 @@ def __setup_node_value(layer, channel):
     else:
         value = layer.node.node_tree.nodes.new(constants.NODES["RGB"])
         value.outputs[0].default_value = channel.inp.default_value
-    
-    #name value node
+
+    # name value node
     value.label = "Channel Value"
 
     return value
 
 
 def __setup_node_texture(layer, channel):
-    """ set up the channel to use a texture instead of the value """
+    """set up the channel to use a texture instead of the value"""
     tex = layer.texture_setup()
     return tex
 
 
 def __remove_layer_channel_nodes(layer, channel_uid):
-    """ remove all nodes belonging to the layers channel """
+    """remove all nodes belonging to the layers channel"""
     mix = get_channel_mix_node(layer, channel_uid)
     opac = get_channel_opacity_socket(layer, channel_uid).node
     tex_alpha = get_channel_tex_alpha_socket(layer, channel_uid).node
     value = get_channel_value_node(layer, channel_uid)
-    
+
     layer.node.node_tree.nodes.remove(mix)
     layer.node.node_tree.nodes.remove(opac)
     layer.node.node_tree.nodes.remove(tex_alpha)

@@ -3,32 +3,35 @@ import os
 
 # id names of different nodes for cleaner notation
 NODES = {
-    "TEX":      "ShaderNodeTexImage",
-    "MAPPING":  "ShaderNodeMapping",
-    "COORDS":   "ShaderNodeTexCoord",
-    "PRINC":    "ShaderNodeBsdfPrincipled",
-    "MIX":      "ShaderNodeMixRGB",
-    "VALUE":    "ShaderNodeValue",
-    "RGB":      "ShaderNodeRGB",
-    "OUT":      "ShaderNodeOutputMaterial",
-    "NORMAL":   "ShaderNodeNormalMap",
-    "BUMP":     "ShaderNodeBump",
-    "DISP":     "ShaderNodeDisplacement",
-    "FRAME":    "NodeFrame",
-    "EMIT":     "ShaderNodeEmission",
-    "RAMP":     "ShaderNodeValToRGB",
-    "CURVES":   "ShaderNodeRGBCurve",
-    "GROUP":    "ShaderNodeGroup",
+    "TEX": "ShaderNodeTexImage",
+    "MAPPING": "ShaderNodeMapping",
+    "COORDS": "ShaderNodeTexCoord",
+    "PRINC": "ShaderNodeBsdfPrincipled",
+    "MIX": "ShaderNodeMixRGB",
+    "VALUE": "ShaderNodeValue",
+    "RGB": "ShaderNodeRGB",
+    "OUT": "ShaderNodeOutputMaterial",
+    "NORMAL": "ShaderNodeNormalMap",
+    "BUMP": "ShaderNodeBump",
+    "DISP": "ShaderNodeDisplacement",
+    "FRAME": "NodeFrame",
+    "EMIT": "ShaderNodeEmission",
+    "RAMP": "ShaderNodeValToRGB",
+    "CURVES": "ShaderNodeRGBCurve",
+    "GROUP": "ShaderNodeGroup",
     "GROUP_IN": "NodeGroupInput",
-    "GROUP_OUT":"NodeGroupOutput",
+    "GROUP_OUT": "NodeGroupOutput",
 }
 
 
 # id names of different sockets for cleaner notation
 SOCKETS = {
-    "COLOR":        "NodeSocketColor",
-    "FLOAT":        "NodeSocketFloat",
-    "FLOAT_FACTOR": "NodeSocketFloatFactor",
+    "COLOR": "NodeSocketColor",
+    "FLOAT": "NodeSocketFloat",
+    "FLOAT_FACTOR": "NodeSocketFloat",
+}
+SOCKET_MAP = {
+    "NodeSocketFloatFactor": "NodeSocketFloat",
 }
 
 
@@ -104,30 +107,15 @@ TEX_DIR_NAME = "LP Textures"
 CHANNEL_ABBR = [
     {
         "names": ["Color", "Base Color", "Albedo", "Diffuse"],
-        "abbr": ["col", "clr", "color", "base_color", "albedo", "dif", "diffuse"]
+        "abbr": ["col", "clr", "color", "base_color", "albedo", "dif", "diffuse"],
     },
     {
         "names": ["Metallic", "Metalness"],
-        "abbr": ["met", "metal", "mtl", "metallic", "metalness"]
+        "abbr": ["met", "metal", "mtl", "metallic", "metalness"],
     },
-    {
-        "names": ["Roughness"],
-        "abbr": ["roughness", "rgh"]
-    },
-    {
-        "names": ["Emission"],
-        "abbr": ["emission", "emit"]
-    },
-    {
-        "names": ["Alpha", "Transparency"],
-        "abbr": ["alpha", "alph", "transparency"]
-    },
-    {
-        "names": ["Normal"],
-        "abbr": ["normal", "nrml"]
-    },
-    {
-        "names": ["Height", "Bump"],
-        "abbr": ["height", "bump", "bmp"]
-    },
+    {"names": ["Roughness"], "abbr": ["roughness", "rgh"]},
+    {"names": ["Emission"], "abbr": ["emission", "emit"]},
+    {"names": ["Alpha", "Transparency"], "abbr": ["alpha", "alph", "transparency"]},
+    {"names": ["Normal"], "abbr": ["normal", "nrml"]},
+    {"names": ["Height", "Bump"], "abbr": ["height", "bump", "bmp"]},
 ]

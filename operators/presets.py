@@ -10,9 +10,11 @@ class LP_OT_PbrSetup(bpy.types.Operator):
     bl_description = "Adds the basic PBR channels to your material"
     bl_options = {"REGISTER", "UNDO", "INTERNAL"}
 
-    material: bpy.props.StringProperty(name="Material",
-                                       description="Name of the material to use",
-                                       options={"HIDDEN", "SKIP_SAVE"})
+    material: bpy.props.StringProperty(
+        name="Material",
+        description="Name of the material to use",
+        options={"HIDDEN", "SKIP_SAVE"},
+    )
 
     @classmethod
     def poll(cls, context):
@@ -23,17 +25,17 @@ class LP_OT_PbrSetup(bpy.types.Operator):
             out = mat.node_tree.nodes.new(constants.NODES["OUT"])
         if not princ:
             princ = mat.node_tree.nodes.new(constants.NODES["PRINC"])
-            princ.location = (out.location[0]-200, out.location[1])
+            princ.location = (out.location[0] - 200, out.location[1])
         if not princ.outputs[0].is_linked:
             mat.node_tree.links.new(princ.outputs[0], out.inputs[0])
         if not bump:
             bump = mat.node_tree.nodes.new(constants.NODES["BUMP"])
-            bump.location = (princ.location[0], princ.location[1]-630)
+            bump.location = (princ.location[0], princ.location[1] - 630)
         if not bump.outputs[0].is_linked:
             mat.node_tree.links.new(bump.outputs[0], princ.inputs["Normal"])
         if not normal:
             normal = mat.node_tree.nodes.new(constants.NODES["NORMAL"])
-            normal.location = (princ.location[0], princ.location[1]-820)
+            normal.location = (princ.location[0], princ.location[1] - 820)
         if not normal.outputs[0].is_linked:
             mat.node_tree.links.new(normal.outputs[0], bump.inputs["Normal"])
         return princ, normal, bump, out
@@ -59,7 +61,7 @@ class LP_OT_PbrSetup(bpy.types.Operator):
         color.default_enable = True
         channel = mat.lp.add_channel(princ.inputs["Roughness"])
         channel = mat.lp.add_channel(princ.inputs["Metallic"])
-        channel = mat.lp.add_channel(princ.inputs["Emission"])
+        channel = mat.lp.add_channel(princ.inputs["Emission Color"])
         channel = mat.lp.add_channel(bump.inputs["Height"])
         channel.name = "Height"
         channel = mat.lp.add_channel(normal.inputs["Color"])

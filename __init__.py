@@ -19,15 +19,14 @@ from . import handlers, addon, ui, data, operators, keymaps
 
 bl_info = {
     "name": "Layer Painter",
-    "author": "Joshua Knauber, blanchsb, Cyan Los, Bongo Cat, thefauxrogue",
-    "additonal contributions by": "Hunanbean-Collective, E. Woodford, R. Brown, S. Charan, A. Eldien",
+    "author": "Joshua Knauber, blanchsb, Cyan Los, Bongo Cat, thefauxrogue, Hunanbean-Collective, E. Woodford, R. Brown, S. Charan, A. Eldien",
     "description": "Layer based texture painting inside blender",
-    "blender": (3, 5, 0),
-    "version": (2, 0, 1),
+    "blender": (4, 0, 0),
+    "version": (2, 1, 0),
     "location": "View3D > N-Panel > Layer Painter",
     "category": "Material",
     "wiki_url": "https://github.com/joshuaKnauber/layer_painter",
-    "tracker_url": "https://github.com/joshuaKnauber/layer_painter/issues"
+    "tracker_url": "https://github.com/joshuaKnauber/layer_painter/issues",
 }
 
 

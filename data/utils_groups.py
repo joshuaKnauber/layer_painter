@@ -3,7 +3,7 @@ from .. import constants
 
 
 def __add_warning_frame(ntree):
-    """ adds a warning to the given node tree as not to edit it """
+    """adds a warning to the given node tree as not to edit it"""
     frame = ntree.nodes.new(constants.NODES["FRAME"])
     frame.label = "Do not edit this node group! This will break Layer Painter!"
     frame.use_custom_color = True
@@ -13,7 +13,7 @@ def __add_warning_frame(ntree):
 
 
 def make_group(ntree, name):
-    """ creates an empty node group and assigns it to a node """
+    """creates an empty node group and assigns it to a node"""
     ngroup = bpy.data.node_groups.new(name, "ShaderNodeTree")
     ngroup.use_fake_user = True
 
@@ -36,16 +36,20 @@ def make_group(ntree, name):
 
 
 def add_input(node, idname, name):
-    """ adds an input to the given nodes node group
+    """adds an input to the given nodes node group
     return node_input, node_group_input_node_output
     """
-    node.node_tree.inputs.new(idname, name)
+    if idname in constants.SOCKET_MAP:
+        idname = constants.SOCKET_MAP[idname]
+    node.node_tree.interface.new_socket(socket_type=idname, name=name, in_out="INPUT")
     return node.inputs[-1], node.node_tree.nodes[constants.INPUT_NAME].outputs[-2]
 
 
 def add_output(node, idname, name):
-    """ adds an output to the given nodes node group
+    """adds an output to the given nodes node group
     return node_output, node_group_output_node_input
     """
-    node.node_tree.outputs.new(idname, name)
+    if idname in constants.SOCKET_MAP:
+        idname = constants.SOCKET_MAP[idname]
+    node.node_tree.interface.new_socket(socket_type=idname, name=name, in_out="OUTPUT")
     return node.outputs[-1], node.node_tree.nodes[constants.OUTPUT_NAME].inputs[-2]
